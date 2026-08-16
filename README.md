@@ -6,8 +6,6 @@ Do NOT make the README mainly about what has been completed so far.
 
 The README should present Synk as a complete project with a clear product vision, architecture, technology stack, development roadmap, and current implementation status.
 
-Before writing, inspect the existing repository and backend code so all implemented functionality is accurate.
-
 SYNK
 ==================================================
 Synk is a cross-device ecosystem that connects a user's mobile phone and laptop so information can move seamlessly between their devices.
