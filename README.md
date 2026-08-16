@@ -1,266 +1,226 @@
-SYNK
-==================================================
-Synk is a cross-device ecosystem that connects a user's mobile phone and laptop so information can move seamlessly between their devices.
+# 🔗 Synk
 
-The first version focuses on two-way text clipboard synchronization.
+**Synk** is a cross-device ecosystem that connects your phone and laptop, letting information move seamlessly between them.
 
-Example:
+The first milestone: **reliable two-way text clipboard synchronization.**
 
-Phone:
-Copy → "Hello from my phone"
+```
+Phone                          Laptop
+ Copy → "Hello from my phone"
+              ↓
+            Synk
+              ↓
+                              Paste → "Hello from my phone"
+```
 
-        ↓
+```
+Laptop                         Phone
+ Copy → "Hello from my laptop"
+              ↓
+            Synk
+              ↓
+                              Paste → "Hello from my laptop"
+```
 
-       Synk
+Synk's architecture is designed from day one to extend beyond text — to images, videos, files, and links — but this first version focuses on getting clipboard sync right.
 
-        ↓
+---
 
-Laptop:
-Paste → "Hello from my phone"
+## 🎯 Vision
 
-And the reverse:
+Synk aims to feel like a personal ecosystem that connects your devices:
 
-Laptop:
-Copy → "Hello from my laptop"
+```
+Phone  ↔  Synk  ↔  Laptop
+```
 
-        ↓
+Fast, secure, seamless transfer of clipboard content — and eventually, much more — between the devices you use every day.
 
-       Synk
+The long-term roadmap includes device pairing, authentication, persistent storage, and rich content types. The current focus is the foundation: a backend coordination layer, device identity, and real-time communication.
 
-        ↓
+---
 
-Phone:
-Paste → "Hello from my laptop"
+## 🧱 Technology
 
-The architecture should be designed so that future versions can support:
-- Images
-- Videos
-- Files
-- Links
-- Other shared content
+| Layer      | Stack |
+|------------|-------|
+| Backend    | Python, FastAPI, WebSockets, Pydantic, Pydantic Settings, Uvicorn |
+| Mobile     | Flutter, Dart |
+| Desktop    | Electron, React, JavaScript/TypeScript *(developed by a separate contributor)* |
+| Database   | PostgreSQL — **planned**, not yet implemented |
+| Auth       | **Planned**, not yet implemented |
 
-Do NOT claim those future features are already implemented.
+---
 
-==================================================
-CORE VISION
-==================================================
+## 🏗️ Architecture
 
-Synk should feel like a personal ecosystem connecting a user's devices.
-
-The long-term goal is:
-
-Phone ↔ Synk ↔ Laptop
-
-with fast, secure, seamless transfer of clipboard and other content.
-
-The first milestone is reliable text clipboard synchronization.
-
-==================================================
-TECHNOLOGY
-==================================================
-
-Backend:
-- Python
-- FastAPI
-- WebSockets
-- Pydantic
-- Pydantic Settings
-- Uvicorn
-
-Mobile:
-- Flutter
-- Dart
-
-Desktop:
-- Electron
-- React
-- JavaScript/TypeScript
-
-The desktop application will be developed by a separate contributor.
-
-Database:
-- PostgreSQL is planned for persistent device/pairing data.
-- Do not claim PostgreSQL is currently implemented.
-
-Authentication:
-- Planned.
-- Do not claim it is currently implemented.
-
-==================================================
-ARCHITECTURE
-==================================================
-
-Create a clear architecture diagram.
-
-The intended architecture is:
-
-                 ┌──────────────────────┐
+```
+                 ┌───────────────────────┐
                  │      Synk Backend     │
-                 │       FastAPI        │
-                 │                      │
-                 │ REST API + WebSocket │
-                 └──────────┬───────────┘
-                            │
-                    WebSocket connection
-                    ┌───────┴───────┐
-                    │               │
-             ┌──────▼──────┐ ┌─────▼───────┐
-             │   Flutter   │ │   Electron  │
-             │    Mobile   │ │   Desktop   │
-             └─────────────┘ └─────────────┘
+                 │        FastAPI        │
+                 │                       │
+                 │  REST API + WebSocket │
+                 └───────────┬───────────┘
+                             │
+                     WebSocket connection
+                     ┌───────┴───────┐
+                     │               │
+              ┌──────▼──────┐ ┌──────▼──────┐
+              │   Flutter   │ │   Electron  │
+              │    Mobile   │ │   Desktop   │
+              └─────────────┘ └─────────────┘
+```
 
-Explain the responsibility of each component.
+**Backend (FastAPI)** — the coordination layer. It owns device identity, manages WebSocket connections, and will own pairing, auth, and message routing. Mobile and desktop clients never talk to each other directly; everything is routed through the backend. Centralizing this logic keeps the clients thin and keeps the protocol easy to extend to new content types later.
 
-Explain that the backend acts as the coordination layer rather than having the mobile and desktop applications communicate directly with each other.
+**Mobile (Flutter)** — registers a device identity, connects to the backend, monitors the system clipboard, and will send/receive clipboard events once sync is implemented.
 
-==================================================
-HOW SYNK WILL WORK
-==================================================
+**Desktop (Electron)** — same responsibilities as the mobile client, for laptop/desktop environments. Developed by a separate contributor.
 
-Explain the intended lifecycle:
+---
 
-1. User installs Synk on phone.
-2. User installs Synk on laptop.
-3. Each application creates/registers a device identity.
-4. Devices connect to the Synk backend.
-5. User pairs trusted devices.
-6. Devices maintain WebSocket connections.
-7. Clipboard changes are detected locally.
-8. Clipboard data is sent through the backend.
-9. Backend routes the data to the paired device.
-10. Receiving device updates its clipboard.
-11. The process works in both directions.
+## 🔄 How Synk Will Work
 
-Clearly label which parts are currently implemented and which are planned.
+| Step | Description | Status |
+|------|-------------|--------|
+| 1 | User installs Synk on phone | 🔜 Planned |
+| 2 | User installs Synk on laptop | 🔜 Planned |
+| 3 | Each app creates/registers a device identity | ✅ Implemented (backend endpoint) |
+| 4 | Devices connect to the Synk backend | ✅ Implemented (WebSocket foundation) |
+| 5 | User pairs trusted devices | 🔜 Planned |
+| 6 | Devices maintain WebSocket connections | ✅ Implemented (foundation) |
+| 7 | Clipboard changes are detected locally | 🔜 Planned |
+| 8 | Clipboard data is sent through the backend | 🔜 Planned |
+| 9 | Backend routes data to the paired device | 🔜 Planned |
+| 10 | Receiving device updates its clipboard | 🔜 Planned |
+| 11 | The process works in both directions | 🔜 Planned |
 
-==================================================
-CURRENT IMPLEMENTATION
-==================================================
+---
 
-Accurately document what already exists:
+## ✅ Current Implementation
 
-Backend foundation:
+Synk's backend currently provides the **foundation** the rest of the system will be built on. Clipboard synchronization itself is **not yet implemented** — what exists today is device identity, real-time connectivity, and the scaffolding to route messages between devices.
+
+**Backend foundation**
 - FastAPI application
-- /health endpoint
-- environment-based configuration
-- modular API routing
+- `/health` endpoint
+- Environment-based configuration
+- Modular API routing
 
-WebSocket foundation:
-- /ws/{device_id}
-- ConnectionManager
-- connection tracking
-- personal messaging
-- broadcasting
-- disconnect handling
-- JSON message handling
-- invalid JSON handling
+**WebSocket foundation**
+- `/ws/{device_id}` endpoint
+- `ConnectionManager` for tracking active connections
+- Personal (targeted) messaging
+- Broadcasting
+- Disconnect handling
+- JSON message handling, including invalid JSON handling
 
-Device identity:
-- device registration endpoint
-- UUID4 device IDs
-- mobile and desktop device types
-- in-memory device registry
-- device lookup endpoint
-- input validation
+**Device identity**
+- Device registration endpoint
+- UUID4-based device IDs
+- Support for `mobile` and `desktop` device types
+- In-memory device registry
+- Device lookup endpoint
+- Input validation
 
-Testing:
-- automated backend tests
-- WebSocket tests
-- device registration tests
-- current test suite passes
+**Testing**
+- Automated backend test suite
+- WebSocket connection tests
+- Device registration tests
+- Current test suite passes
 
-Clearly state that these are foundation components and the actual clipboard synchronization feature is not yet implemented.
+---
 
-==================================================
-API
-==================================================
+## 📡 API
 
-Document the currently implemented endpoints.
+### Health
 
-Health:
-
+```
 GET /health
+```
 
-Example response:
-
+**Response**
+```json
 {
   "status": "ok"
 }
+```
 
-Device registration:
+### Register a device
 
+```
 POST /api/v1/devices/register
+```
 
-Request:
-
+**Request**
+```json
 {
   "device_name": "My Phone",
   "device_type": "mobile"
 }
+```
 
-Response:
-
+**Response**
+```json
 {
   "device_id": "UUID",
   "device_name": "My Phone",
   "device_type": "mobile"
 }
+```
 
-Device lookup:
+### Look up a device
 
+```
 GET /api/v1/devices/{device_id}
+```
 
-Document the expected success and not-found behavior.
+Returns the device's details on success, or a not-found response if no device matches the given ID.
 
-WebSocket:
+### WebSocket
 
+```
 /ws/{device_id}
+```
 
-Explain that the current WebSocket implementation is a communication foundation and is not yet the final clipboard protocol.
+This is the current real-time communication foundation for Synk — connection tracking, message passing, and disconnect handling. It is **not yet the final clipboard sync protocol**; that protocol will be layered on top as clipboard sync is implemented.
 
-Do not invent undocumented endpoints.
+> These are the only endpoints currently implemented. No other routes exist yet.
 
-==================================================
-REPOSITORY STRUCTURE
-==================================================
+---
 
-Document the current and intended repository structure.
+## 📁 Repository Structure
 
-Example:
-
+```
 synk/
-├── backend/
+├── backend/                  # ✅ Implemented
 │   ├── app/
 │   │   ├── api/
-│   │   │   └── routes/
-│   │   ├── core/
-│   │   ├── models/
-│   │   ├── services/
+│   │   │   └── routes/       # Health, device, WebSocket routes
+│   │   ├── core/             # Configuration
+│   │   ├── models/           # Data models
+│   │   ├── services/         # Business logic
 │   │   └── main.py
 │   ├── tests/
 │   ├── requirements.txt
 │   └── .env.example
 │
-├── mobile/
-│   └── Flutter application
+├── mobile/                   # 🔜 Planned — Flutter application
 │
-├── desktop/
-│   └── Electron desktop application
+├── desktop/                  # 🔜 Planned — Electron desktop application
 │
 ├── docs/
 │
 └── README.md
+```
 
-Clearly distinguish existing directories/files from planned application areas.
+---
 
-==================================================
-LOCAL DEVELOPMENT
-==================================================
+## 💻 Local Development
 
-Provide accurate instructions for running the backend locally on Windows.
+Currently, only the backend is runnable. Instructions below are for Windows.
 
-Include:
-
+```powershell
 cd backend
 
 python -m venv .venv
@@ -270,112 +230,108 @@ python -m venv .venv
 pip install -r requirements.txt
 
 uvicorn app.main:app --reload
+```
 
-Explain that the server runs locally and show how to test:
+The server will start locally. Verify it's running:
 
+```
 GET http://127.0.0.1:8000/health
+```
 
-Testing:
+**Run the test suite**
 
+```powershell
 pytest
+```
 
-Do not invent commands that do not work with the current repository.
+---
 
-==================================================
-ROADMAP
-==================================================
+## 🗺️ Roadmap
 
-Create a clear roadmap.
+- [x] **Phase 1 — Foundation**
+  - [x] FastAPI backend
+  - [x] WebSocket communication
+  - [x] Device identity
+  - [x] Device registration
+  - [x] Testing
 
-Phase 1 — Foundation
-- FastAPI backend
-- WebSocket communication
-- Device identity
-- Device registration
-- Testing
+- [ ] **Phase 2 — Device Pairing**
+  - [ ] Pairing flow
+  - [ ] Trusted device relationships
+  - [ ] Pairing codes
+  - [ ] Pairing state
 
-Phase 2 — Device Pairing
-- Pairing flow
-- Trusted device relationships
-- Pairing codes
-- Pairing state
+- [ ] **Phase 3 — Authentication & Security**
+  - [ ] Authentication
+  - [ ] Authorization
+  - [ ] Secure device communication
+  - [ ] Secret management
+  - [ ] Input validation (hardened)
+  - [ ] Rate limiting where appropriate
 
-Phase 3 — Authentication & Security
-- Authentication
-- Authorization
-- Secure device communication
-- Secret management
-- Input validation
-- Rate limiting where appropriate
+- [ ] **Phase 4 — Persistent Storage**
+  - [ ] PostgreSQL
+  - [ ] Device persistence
+  - [ ] Pairing persistence
+  - [ ] Required indexes
+  - [ ] Database migrations
 
-Phase 4 — Persistent Storage
-- PostgreSQL
-- Device persistence
-- Pairing persistence
-- Required indexes
-- Database migrations
+- [ ] **Phase 5 — Mobile Application**
+  - [ ] Flutter application
+  - [ ] Device registration
+  - [ ] Pairing UI
+  - [ ] WebSocket connection
+  - [ ] Clipboard monitoring
+  - [ ] Clipboard receiving
 
-Phase 5 — Mobile Application
-- Flutter application
-- Device registration
-- Pairing UI
-- WebSocket connection
-- Clipboard monitoring
-- Clipboard receiving
+- [ ] **Phase 6 — Desktop Application**
+  - [ ] Electron application
+  - [ ] Device registration
+  - [ ] Pairing UI
+  - [ ] WebSocket connection
+  - [ ] Clipboard monitoring
+  - [ ] Clipboard receiving
 
-Phase 6 — Desktop Application
-- Electron application
-- Device registration
-- Pairing UI
-- WebSocket connection
-- Clipboard monitoring
-- Clipboard receiving
+- [ ] **Phase 7 — Text Clipboard Sync**
+  - [ ] Phone → Laptop
+  - [ ] Laptop → Phone
+  - [ ] Loop prevention
+  - [ ] Duplicate prevention
+  - [ ] Reconnection handling
+  - [ ] Offline/reconnection behavior
 
-Phase 7 — Text Clipboard Sync
-- Phone → Laptop
-- Laptop → Phone
-- Loop prevention
-- Duplicate prevention
-- Reconnection handling
-- Offline/reconnection behavior
+- [ ] **Phase 8 — Rich Content**
+  - [ ] Images
+  - [ ] Files
+  - [ ] Videos
+  - [ ] Links
+  - [ ] Content metadata
 
-Phase 8 — Rich Content
-- Images
-- Files
-- Videos
-- Links
-- Content metadata
+- [ ] **Phase 9 — Production**
+  - [ ] Deployment
+  - [ ] Monitoring
+  - [ ] Logging
+  - [ ] Security hardening
+  - [ ] Performance optimization
 
-Phase 9 — Production
-- Deployment
-- Monitoring
-- Logging
-- Security hardening
-- Performance optimization
+---
 
-==================================================
-SECURITY
-==================================================
+## 🔒 Security
 
-Explain the security goals without pretending they are already implemented.
+Security is a core design goal for Synk, not an afterthought. The following are **planned**, not yet implemented:
 
-Mention that future versions should include:
-- authenticated devices
-- secure pairing
-- authorization
-- encrypted communication
-- secure secret management
-- validation
-- rate limiting
-- protection against unauthorized device registration
+- Authenticated devices
+- Secure pairing between trusted devices
+- Authorization checks on all sensitive operations
+- Encrypted communication between clients and backend
+- Secure secret management
+- Comprehensive input validation
+- Rate limiting on sensitive endpoints
+- Protection against unauthorized device registration
 
-Clearly mark these as planned if they are not implemented.
+---
 
-==================================================
-DESIGN PRINCIPLES
-==================================================
-
-Document the project's engineering principles:
+## 🧭 Design Principles
 
 - Keep mobile and desktop clients thin.
 - Keep synchronization logic centralized where appropriate.
@@ -388,12 +344,11 @@ Document the project's engineering principles:
 - Do not over-engineer early versions.
 - Keep the protocol extensible for future content types.
 
-==================================================
-DEVELOPMENT WORKFLOW
-==================================================
+---
 
-Explain the Git workflow:
+## 🌱 Development Workflow
 
+```
 main
   ↓
 feature branch
@@ -409,44 +364,39 @@ pull request
 review
   ↓
 merge
+```
 
-Mention that feature branches should be used instead of directly developing on main.
+All changes are made on feature branches — direct development on `main` is avoided.
 
-==================================================
-PROJECT STATUS
-==================================================
+---
 
-Add a concise status section.
+## 📊 Project Status
 
-Use:
-
-Implemented:
+**Implemented**
 - Backend foundation
 - WebSocket foundation
 - Device registration
 - Device identity
 - Automated tests
 
-In Progress:
+**In Progress**
 - Architecture expansion toward device pairing
 
-Planned:
+**Planned**
 - Pairing
 - Authentication
-- Database
-- Flutter client
-- Electron client
+- Database (PostgreSQL)
+- Flutter mobile client
+- Electron desktop client
 - Clipboard synchronization
-- Rich content synchronization
+- Rich content synchronization (images, files, videos, links)
 - Production deployment
 
-Do not make the README sound unfinished or like a temporary development diary. Present the current implementation as the foundation of the larger Synk product.
+Synk today is the foundation layer of a larger product — device identity and real-time communication are working and tested, and the rest of the system is being built on top of them.
 
-==================================================
-CONTRIBUTING
-==================================================
+---
 
-Add simple contribution guidelines:
+## 🤝 Contributing
 
 1. Fork/clone the repository.
 2. Create a feature branch.
@@ -456,51 +406,8 @@ Add simple contribution guidelines:
 6. Commit with a meaningful message.
 7. Open a pull request.
 
-Do not invent a code of conduct or contribution policy that doesn't exist.
+---
 
-==================================================
-LICENSE
-==================================================
+## 📄 License
 
-If the repository does not currently contain a LICENSE file, say:
-
-"License: Not yet selected."
-
-Do not invent a license.
-
-==================================================
-STYLE
-==================================================
-
-Make the README visually strong and professional.
-
-Use:
-- clear headings
-- concise explanations
-- Markdown code blocks
-- architecture diagrams
-- tables where useful
-- checkboxes for roadmap/status
-- appropriate emojis, but don't overuse them
-
-The README should feel like a serious open-source developer project, not a school assignment.
-
-Do NOT:
-- add fake badges
-- add fake deployment links
-- add fake screenshots
-- claim unfinished features are working
-- invent API endpoints
-- invent database schemas
-- invent authentication mechanisms
-- invent contributors
-- invent metrics
-- add unnecessary marketing language
-
-Only update README.md.
-
-After writing it:
-1. Show me the complete final README.
-2. Verify all current implementation claims against the code.
-3. Do not modify application code.
-4. Do not commit anything.
+License: Not yet selected.
