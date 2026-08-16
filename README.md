@@ -11,9 +11,6 @@ Before writing, inspect the existing repository and backend code so all implemen
 ==================================================
 PROJECT
 ==================================================
-
-Project name: Synk
-
 Synk is a cross-device ecosystem that connects a user's mobile phone and laptop so information can move seamlessly between their devices.
 
 The first version focuses on two-way text clipboard synchronization.
