@@ -8,8 +8,7 @@ The README should present Synk as a complete project with a clear product vision
 
 Before writing, inspect the existing repository and backend code so all implemented functionality is accurate.
 
-==================================================
-PROJECT
+SYNK
 ==================================================
 Synk is a cross-device ecosystem that connects a user's mobile phone and laptop so information can move seamlessly between their devices.
 
