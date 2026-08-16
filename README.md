@@ -4,8 +4,6 @@ IMPORTANT:
 This is NOT an internal development log.
 Do NOT make the README mainly about what has been completed so far.
 
-The README should present Synk as a complete project with a clear product vision, architecture, technology stack, development roadmap, and current implementation status.
-
 SYNK
 ==================================================
 Synk is a cross-device ecosystem that connects a user's mobile phone and laptop so information can move seamlessly between their devices.
