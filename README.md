@@ -1,7 +1,4 @@
 Rewrite the root README.md for the Synk project as a polished, public-facing open-source project README.
-
-IMPORTANT:
-This is NOT an internal development log.
 SYNK
 ==================================================
 Synk is a cross-device ecosystem that connects a user's mobile phone and laptop so information can move seamlessly between their devices.
