@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "synk-backend"
     ENVIRONMENT: str = "development"
     DEBUG: bool = False
+    DATABASE_URL: str = "postgresql+asyncpg://synk:synk@localhost:5432/synk"
 
     model_config = SettingsConfigDict(
         env_file=".env",

@@ -1,48 +1,53 @@
-"""In-memory device registry service for Synk backend.
+"""Device registry service for Synk backend.
 
-This service manages device registration and lookup without a database.
-For production, this would be replaced with a persistent storage solution.
+This service manages device registration and lookup using PostgreSQL.
 """
 
 import asyncio
-import uuid
 from typing import Optional
 
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import IntegrityError
+from uuid import UUID
+
+from app.db.database import database
 from app.models.device import Device, DeviceType, DeviceRegistrationRequest
+from app.repositories.device_repository import DeviceRepository
+from app.services.auth_service import auth_service
 
 
 class DeviceRegistry:
-    """In-memory device registry with thread-safe operations."""
+    """PostgreSQL-backed device registry."""
 
     def __init__(self) -> None:
-        """Initialize the registry with an empty device store."""
-        self._devices: dict[str, Device] = {}
+        """Initialize the registry."""
         self._lock = asyncio.Lock()
 
-    def _generate_device_id(self) -> str:
-        """Generate a unique device ID using UUID4."""
-        return str(uuid.uuid4())
+    async def _get_session(self) -> AsyncSession:
+        """Get a database session."""
+        return database._session_factory()
 
-    async def register(self, request: DeviceRegistrationRequest) -> Device:
-        """Register a new device.
+    async def register(self, request: DeviceRegistrationRequest) -> tuple[Device, str]:
+        """Register a new device and generate an authentication token.
 
         Args:
             request: Device registration request with name and type.
 
         Returns:
-            The registered device with generated device_id.
+            Tuple of (Device, auth_token) where auth_token is the raw token
+            that must be stored securely by the client. Only returned once.
         """
-        device_id = self._generate_device_id()
-        device = Device(
-            device_id=device_id,
-            device_name=request.device_name,
-            device_type=request.device_type,
-        )
-
         async with self._lock:
-            self._devices[device_id] = device
-
-        return device
+            async with database.session() as session:
+                repo = DeviceRepository(session)
+                device_model = await repo.create(
+                    device_name=request.device_name,
+                    device_type=request.device_type.value,
+                )
+                # Create auth token for the device
+                raw_token, _ = await auth_service.create_token(session, device_model.id)
+                await session.commit()
+                return self._model_to_device(device_model), raw_token
 
     async def get(self, device_id: str) -> Optional[Device]:
         """Retrieve a device by its ID.
@@ -53,8 +58,19 @@ class DeviceRegistry:
         Returns:
             The device if found, None otherwise.
         """
-        async with self._lock:
-            return self._devices.get(device_id)
+        # Validate UUID format before querying
+        import uuid
+        try:
+            uuid.UUID(device_id)
+        except ValueError:
+            return None
+
+        async with database.session() as session:
+            repo = DeviceRepository(session)
+            device_model = await repo.get(device_id)
+            if device_model:
+                return self._model_to_device(device_model)
+            return None
 
     async def exists(self, device_id: str) -> bool:
         """Check if a device exists in the registry.
@@ -65,8 +81,16 @@ class DeviceRegistry:
         Returns:
             True if device exists, False otherwise.
         """
-        async with self._lock:
-            return device_id in self._devices
+        # Validate UUID format before querying
+        import uuid
+        try:
+            uuid.UUID(device_id)
+        except ValueError:
+            return False
+
+        async with database.session() as session:
+            repo = DeviceRepository(session)
+            return await repo.exists(device_id)
 
     async def list_devices(self) -> list[Device]:
         """List all registered devices.
@@ -74,8 +98,10 @@ class DeviceRegistry:
         Returns:
             List of all devices.
         """
-        async with self._lock:
-            return list(self._devices.values())
+        async with database.session() as session:
+            repo = DeviceRepository(session)
+            models = await repo.list_all()
+            return [self._model_to_device(m) for m in models]
 
     async def count(self) -> int:
         """Get the total number of registered devices.
@@ -83,13 +109,28 @@ class DeviceRegistry:
         Returns:
             Number of devices in registry.
         """
-        async with self._lock:
-            return len(self._devices)
+        async with database.session() as session:
+            repo = DeviceRepository(session)
+            return await repo.count()
 
     async def clear(self) -> None:
         """Clear all devices from the registry. Primarily for testing."""
-        async with self._lock:
-            self._devices.clear()
+        # Note: This is only used in tests. In production, don't clear the DB.
+        async with database.session() as session:
+            repo = DeviceRepository(session)
+            devices = await repo.list_all()
+            for device in devices:
+                await repo.delete(device.id)
+            await session.commit()
+
+    @staticmethod
+    def _model_to_device(model) -> Device:
+        """Convert SQLAlchemy model to Pydantic Device."""
+        return Device(
+            device_id=str(model.id),
+            device_name=model.device_name,
+            device_type=model.device_type,
+        )
 
 
 # Global device registry instance

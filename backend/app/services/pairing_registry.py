@@ -1,19 +1,23 @@
-"""In-memory pairing registry service for Synk backend.
+"""Pairing registry service for Synk backend.
 
 This service manages device pairing using temporary 6-digit codes
-with expiration and one-time use. All business logic is contained here,
-separate from API routes.
+with expiration and one-time use. Pairing relationships are persisted
+in PostgreSQL. All business logic is contained here, separate from API routes.
 """
 
 import asyncio
 import secrets
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
 from typing import Optional
+from uuid import UUID
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.db.database import database
 from app.models.device import Device
 from app.models.pairing import PairedDeviceInfo
+from app.repositories.pairing_repository import PairingRepository
 from app.services.device_registry import device_registry
 
 
@@ -38,13 +42,13 @@ class PendingPairing:
 
 
 class PairingRegistry:
-    """In-memory pairing registry with thread-safe operations.
+    """Pairing registry with thread-safe operations.
 
     Manages:
-    - Pending pairing requests with 6-digit codes
+    - Pending pairing requests with 6-digit codes (in-memory, temporary)
     - Expiration of pairing codes (5 minutes)
     - One-time use of pairing codes
-    - Pairing relationships between devices
+    - Pairing relationships between devices (persisted in PostgreSQL)
     """
 
     # 5 minutes in seconds
@@ -54,7 +58,6 @@ class PairingRegistry:
     def __init__(self) -> None:
         """Initialize the registry with empty stores."""
         self._pending_pairings: dict[str, PendingPairing] = {}
-        self._pairings: dict[str, set[str]] = {}  # device_id -> set of paired device_ids
         self._lock = asyncio.Lock()
 
     def _generate_code(self) -> str:
@@ -137,19 +140,22 @@ class PairingRegistry:
             if pending.initiator_device_id == device_id:
                 raise ValueError("A device cannot pair with itself")
 
-            # Check for duplicate pairing
-            paired_with = self._pairings.get(pending.initiator_device_id, set())
-            if device_id in paired_with:
-                raise ValueError("These devices are already paired")
+            # Check for duplicate pairing in database
+            async with database.session() as session:
+                repo = PairingRepository(session)
+                already_paired = await repo.are_paired(
+                    UUID(pending.initiator_device_id),
+                    UUID(device_id),
+                )
+                if already_paired:
+                    raise ValueError("These devices are already paired")
 
-            # Create the pairing relationship (bidirectional)
-            if pending.initiator_device_id not in self._pairings:
-                self._pairings[pending.initiator_device_id] = set()
-            if device_id not in self._pairings:
-                self._pairings[device_id] = set()
-
-            self._pairings[pending.initiator_device_id].add(device_id)
-            self._pairings[device_id].add(pending.initiator_device_id)
+                # Create the pairing relationship in database
+                await repo.create(
+                    UUID(pending.initiator_device_id),
+                    UUID(device_id),
+                )
+                await session.commit()
 
             # Mark the code as consumed (keep in registry to detect reuse)
             pending.consumed = True
@@ -173,22 +179,18 @@ class PairingRegistry:
         if device is None:
             raise ValueError(f"Device with ID '{device_id}' not found")
 
-        async with self._lock:
-            paired_ids = self._pairings.get(device_id, set())
-            paired_devices = []
+        async with database.session() as session:
+            repo = PairingRepository(session)
+            paired_devices = await repo.get_paired_devices(UUID(device_id))
 
-            for paired_id in paired_ids:
-                paired_device = await device_registry.get(paired_id)
-                if paired_device:
-                    paired_devices.append(
-                        PairedDeviceInfo(
-                            device_id=paired_device.device_id,
-                            device_name=paired_device.device_name,
-                            device_type=paired_device.device_type.value,
-                        )
-                    )
-
-            return paired_devices
+            return [
+                PairedDeviceInfo(
+                    device_id=str(p.id),
+                    device_name=p.device_name,
+                    device_type=p.device_type.value,
+                )
+                for p in paired_devices
+            ]
 
     async def are_paired(self, device_id_1: str, device_id_2: str) -> bool:
         """Check if two devices are paired with each other.
@@ -200,15 +202,21 @@ class PairingRegistry:
         Returns:
             True if devices are paired, False otherwise.
         """
-        async with self._lock:
-            paired_with = self._pairings.get(device_id_1, set())
-            return device_id_2 in paired_with
+        async with database.session() as session:
+            repo = PairingRepository(session)
+            return await repo.are_paired(UUID(device_id_1), UUID(device_id_2))
 
     async def clear(self) -> None:
         """Clear all pairings and pending requests. Primarily for testing."""
         async with self._lock:
             self._pending_pairings.clear()
-            self._pairings.clear()
+            # Also clear database pairings (for testing only)
+            async with database.session() as session:
+                repo = PairingRepository(session)
+                pairings = await repo.list_all()
+                for pairing in pairings:
+                    await repo.delete(pairing.device_a_id, pairing.device_b_id)
+                await session.commit()
 
     async def cleanup_expired(self) -> int:
         """Remove expired pending pairing requests.
