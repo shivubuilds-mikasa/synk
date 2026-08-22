@@ -1,5 +1,5 @@
 """HTTP route modules for the Synk backend."""
 
-from app.api.routes import devices, health, websocket
+from app.api.routes import devices, health, pairing, websocket
 
-__all__ = ["devices", "health", "websocket"]
+__all__ = ["devices", "health", "pairing", "websocket"]
