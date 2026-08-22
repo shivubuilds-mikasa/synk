@@ -9,25 +9,16 @@ from app.services.device_registry import device_registry
 from app.models.device import DeviceType
 
 
-@pytest.fixture(autouse=True)
-async def clear_registry():
-    """Clear the device registry before each test."""
-    await device_registry.clear()
-    yield
-    await device_registry.clear()
-
-
 class TestDeviceRegistration:
     """Tests for POST /api/v1/devices/register."""
 
     @pytest.mark.asyncio
-    async def test_register_mobile_device(self):
+    async def test_register_mobile_device(self, async_client):
         """Test successful mobile device registration."""
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-            response = await client.post(
-                "/api/v1/devices/register",
-                json={"device_name": "Shivu's Phone", "device_type": "mobile"},
-            )
+        response = await async_client.post(
+            "/api/v1/devices/register",
+            json={"device_name": "Shivu's Phone", "device_type": "mobile"},
+        )
 
         assert response.status_code == 201
         data = response.json()
@@ -44,13 +35,12 @@ class TestDeviceRegistration:
         assert stored.device_type == DeviceType.MOBILE
 
     @pytest.mark.asyncio
-    async def test_register_desktop_device(self):
+    async def test_register_desktop_device(self, async_client):
         """Test successful desktop device registration."""
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-            response = await client.post(
-                "/api/v1/devices/register",
-                json={"device_name": "Work Laptop", "device_type": "desktop"},
-            )
+        response = await async_client.post(
+            "/api/v1/devices/register",
+            json={"device_name": "Work Laptop", "device_type": "desktop"},
+        )
 
         assert response.status_code == 201
         data = response.json()
@@ -67,21 +57,20 @@ class TestDeviceRegistration:
         assert stored.device_type == DeviceType.DESKTOP
 
     @pytest.mark.asyncio
-    async def test_generated_unique_device_ids(self):
+    async def test_generated_unique_device_ids(self, async_client):
         """Test that each registration generates a unique device_id."""
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-            response1 = await client.post(
-                "/api/v1/devices/register",
-                json={"device_name": "Device 1", "device_type": "mobile"},
-            )
-            response2 = await client.post(
-                "/api/v1/devices/register",
-                json={"device_name": "Device 2", "device_type": "mobile"},
-            )
-            response3 = await client.post(
-                "/api/v1/devices/register",
-                json={"device_name": "Device 3", "device_type": "desktop"},
-            )
+        response1 = await async_client.post(
+            "/api/v1/devices/register",
+            json={"device_name": "Device 1", "device_type": "mobile"},
+        )
+        response2 = await async_client.post(
+            "/api/v1/devices/register",
+            json={"device_name": "Device 2", "device_type": "mobile"},
+        )
+        response3 = await async_client.post(
+            "/api/v1/devices/register",
+            json={"device_name": "Device 3", "device_type": "desktop"},
+        )
 
         assert response1.status_code == 201
         assert response2.status_code == 201
@@ -102,93 +91,85 @@ class TestDeviceRegistration:
             uuid.UUID(device_id)  # Will raise ValueError if not valid UUID
 
     @pytest.mark.asyncio
-    async def test_invalid_device_type(self):
+    async def test_invalid_device_type(self, async_client):
         """Test that invalid device_type is rejected."""
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-            response = await client.post(
-                "/api/v1/devices/register",
-                json={"device_name": "Test Device", "device_type": "tablet"},
-            )
+        response = await async_client.post(
+            "/api/v1/devices/register",
+            json={"device_name": "Test Device", "device_type": "tablet"},
+        )
 
         assert response.status_code == 422
         error_data = response.json()
         assert "detail" in error_data
 
     @pytest.mark.asyncio
-    async def test_invalid_device_type_case_sensitive(self):
+    async def test_invalid_device_type_case_sensitive(self, async_client):
         """Test that device_type is case-sensitive (only lowercase mobile/desktop)."""
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-            response = await client.post(
-                "/api/v1/devices/register",
-                json={"device_name": "Test Device", "device_type": "MOBILE"},
-            )
+        response = await async_client.post(
+            "/api/v1/devices/register",
+            json={"device_name": "Test Device", "device_type": "MOBILE"},
+        )
 
         assert response.status_code == 422
 
     @pytest.mark.asyncio
-    async def test_empty_device_name(self):
+    async def test_empty_device_name(self, async_client):
         """Test that empty device_name is rejected."""
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-            response = await client.post(
-                "/api/v1/devices/register",
-                json={"device_name": "", "device_type": "mobile"},
-            )
+        response = await async_client.post(
+            "/api/v1/devices/register",
+            json={"device_name": "", "device_type": "mobile"},
+        )
 
         assert response.status_code == 422
 
     @pytest.mark.asyncio
-    async def test_whitespace_only_device_name(self):
+    async def test_whitespace_only_device_name(self, async_client):
         """Test that whitespace-only device_name is rejected."""
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-            response = await client.post(
-                "/api/v1/devices/register",
-                json={"device_name": "   ", "device_type": "mobile"},
-            )
+        response = await async_client.post(
+            "/api/v1/devices/register",
+            json={"device_name": "   ", "device_type": "mobile"},
+        )
 
         assert response.status_code == 422
 
     @pytest.mark.asyncio
-    async def test_device_name_too_long(self):
+    async def test_device_name_too_long(self, async_client):
         """Test that device_name exceeding max length is rejected."""
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-            long_name = "a" * 101  # Max is 100
-            response = await client.post(
-                "/api/v1/devices/register",
-                json={"device_name": long_name, "device_type": "mobile"},
-            )
+        long_name = "a" * 101  # Max is 100
+        response = await async_client.post(
+            "/api/v1/devices/register",
+            json={"device_name": long_name, "device_type": "mobile"},
+        )
 
         assert response.status_code == 422
 
     @pytest.mark.asyncio
-    async def test_missing_device_name(self):
+    async def test_missing_device_name(self, async_client):
         """Test that missing device_name is rejected."""
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-            response = await client.post(
-                "/api/v1/devices/register",
-                json={"device_type": "mobile"},
-            )
+        response = await async_client.post(
+            "/api/v1/devices/register",
+            json={"device_type": "mobile"},
+        )
 
         assert response.status_code == 422
 
     @pytest.mark.asyncio
-    async def test_missing_device_type(self):
+    async def test_missing_device_type(self, async_client):
         """Test that missing device_type is rejected."""
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-            response = await client.post(
-                "/api/v1/devices/register",
-                json={"device_name": "Test Device"},
-            )
+        response = await async_client.post(
+            "/api/v1/devices/register",
+            json={"device_name": "Test Device"},
+        )
 
         assert response.status_code == 422
 
     @pytest.mark.asyncio
-    async def test_device_name_trims_whitespace(self):
+    async def test_device_name_trims_whitespace(self, async_client):
         """Test that device_name leading/trailing whitespace is trimmed."""
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-            response = await client.post(
-                "/api/v1/devices/register",
-                json={"device_name": "  My Device  ", "device_type": "mobile"},
-            )
+        response = await async_client.post(
+            "/api/v1/devices/register",
+            json={"device_name": "  My Device  ", "device_type": "mobile"},
+        )
 
         assert response.status_code == 201
         assert response.json()["device_name"] == "My Device"
@@ -198,19 +179,18 @@ class TestDeviceRetrieval:
     """Tests for GET /api/v1/devices/{device_id}."""
 
     @pytest.mark.asyncio
-    async def test_get_registered_device(self):
+    async def test_get_registered_device(self, async_client):
         """Test retrieving a registered device."""
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-            # First register a device
-            register_response = await client.post(
-                "/api/v1/devices/register",
-                json={"device_name": "Test Device", "device_type": "desktop"},
-            )
-            assert register_response.status_code == 201
-            device_id = register_response.json()["device_id"]
+        # First register a device
+        register_response = await async_client.post(
+            "/api/v1/devices/register",
+            json={"device_name": "Test Device", "device_type": "desktop"},
+        )
+        assert register_response.status_code == 201
+        device_id = register_response.json()["device_id"]
 
-            # Then retrieve it
-            get_response = await client.get(f"/api/v1/devices/{device_id}")
+        # Then retrieve it
+        get_response = await async_client.get(f"/api/v1/devices/{device_id}")
 
         assert get_response.status_code == 200
         data = get_response.json()
@@ -219,10 +199,9 @@ class TestDeviceRetrieval:
         assert data["device_type"] == "desktop"
 
     @pytest.mark.asyncio
-    async def test_unknown_device_lookup(self):
+    async def test_unknown_device_lookup(self, async_client):
         """Test retrieving a non-existent device returns 404."""
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-            response = await client.get("/api/v1/devices/non-existent-id")
+        response = await async_client.get("/api/v1/devices/non-existent-id")
 
         assert response.status_code == 404
         error_data = response.json()
@@ -230,13 +209,12 @@ class TestDeviceRetrieval:
         assert "non-existent-id" in error_data["detail"]
 
     @pytest.mark.asyncio
-    async def test_unknown_uuid_lookup(self):
+    async def test_unknown_uuid_lookup(self, async_client):
         """Test retrieving a valid UUID that doesn't exist returns 404."""
         import uuid
         fake_uuid = str(uuid.uuid4())
 
-        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
-            response = await client.get(f"/api/v1/devices/{fake_uuid}")
+        response = await async_client.get(f"/api/v1/devices/{fake_uuid}")
 
         assert response.status_code == 404
 
