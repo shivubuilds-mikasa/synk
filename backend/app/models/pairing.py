@@ -9,16 +9,12 @@ from pydantic import BaseModel, Field, field_validator
 
 
 class PairingCreateRequest(BaseModel):
-    """Request model for creating a pairing code."""
+    """Request model for creating a pairing code.
 
-    device_id: Annotated[
-        str,
-        Field(
-            min_length=1,
-            description="ID of the device requesting a pairing code",
-            examples=["550e8400-e29b-41d4-a716-446655440000"],
-        ),
-    ]
+    The device_id is now obtained from the authenticated device's token,
+    not from the request body.
+    """
+    pass
 
 
 class PairingCreateResponse(BaseModel):
@@ -49,16 +45,12 @@ class PairingCreateResponse(BaseModel):
 
 
 class PairingConfirmRequest(BaseModel):
-    """Request model for confirming a pairing code."""
+    """Request model for confirming a pairing code.
 
-    device_id: Annotated[
-        str,
-        Field(
-            min_length=1,
-            description="ID of the device confirming the pairing",
-            examples=["550e8400-e29b-41d4-a716-446655440001"],
-        ),
-    ]
+    The device_id is obtained from the authenticated device's token,
+    not from the request body.
+    """
+
     code: Annotated[
         str,
         Field(

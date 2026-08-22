@@ -1,9 +1,9 @@
 """Device models for Synk backend."""
 
 from enum import Enum
-from typing import Annotated
+from typing import Annotated, Optional
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class DeviceType(str, Enum):
@@ -61,6 +61,31 @@ class DeviceResponse(BaseModel):
     device_type: Annotated[
         DeviceType,
         Field(description="Type of device"),
+    ]
+    auth_token: Annotated[
+        Optional[str],
+        Field(
+            default=None,
+            description="Authentication token (only returned during registration)",
+            examples=["synk_abcdef1234567890abcdef1234567890abcdef1234567890abcdef123456"],
+        ),
+    ]
+
+
+class DeviceRegistrationResponse(DeviceResponse):
+    """Response model for device registration (includes auth_token).
+
+    The auth_token is only returned once at registration time and must be
+    stored securely by the client. It will not be returned again.
+    """
+
+    auth_token: Annotated[
+        str,
+        Field(
+            min_length=1,
+            description="Authentication token (only returned during registration)",
+            examples=["synk_abcdef1234567890abcdef1234567890abcdef1234567890abcdef123456"],
+        ),
     ]
 
 

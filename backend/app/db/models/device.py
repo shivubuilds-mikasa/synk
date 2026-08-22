@@ -12,6 +12,7 @@ from app.models.device import DeviceType
 
 if TYPE_CHECKING:
     from app.db.models.pairing import PairingModel
+    from app.db.models.auth import AuthTokenModel
 
 
 class DeviceModel(Base, TimestampMixin):
@@ -41,6 +42,11 @@ class DeviceModel(Base, TimestampMixin):
         "PairingModel",
         foreign_keys="PairingModel.device_b_id",
         back_populates="device_b",
+        lazy="selectin",
+    )
+    auth_tokens: Mapped[list["AuthTokenModel"]] = relationship(
+        "AuthTokenModel",
+        back_populates="device",
         lazy="selectin",
     )
 

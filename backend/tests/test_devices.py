@@ -27,6 +27,9 @@ class TestDeviceRegistration:
         assert len(data["device_id"]) > 0
         assert data["device_name"] == "Shivu's Phone"
         assert data["device_type"] == "mobile"
+        assert "auth_token" in data
+        assert data["auth_token"].startswith("synk_")
+        assert len(data["auth_token"]) == 69  # synk_ + 64 hex chars
 
         # Verify device is actually stored
         stored = await device_registry.get(data["device_id"])
@@ -49,6 +52,9 @@ class TestDeviceRegistration:
         assert len(data["device_id"]) > 0
         assert data["device_name"] == "Work Laptop"
         assert data["device_type"] == "desktop"
+        assert "auth_token" in data
+        assert data["auth_token"].startswith("synk_")
+        assert len(data["auth_token"]) == 69
 
         # Verify device is actually stored
         stored = await device_registry.get(data["device_id"])
@@ -89,6 +95,17 @@ class TestDeviceRegistration:
         import uuid
         for device_id in [id1, id2, id3]:
             uuid.UUID(device_id)  # Will raise ValueError if not valid UUID
+
+        # All should have unique auth tokens
+        token1 = response1.json()["auth_token"]
+        token2 = response2.json()["auth_token"]
+        token3 = response3.json()["auth_token"]
+        assert token1 != token2
+        assert token2 != token3
+        assert token1 != token3
+        for token in [token1, token2, token3]:
+            assert token.startswith("synk_")
+            assert len(token) == 69
 
     @pytest.mark.asyncio
     async def test_invalid_device_type(self, async_client):
@@ -180,7 +197,7 @@ class TestDeviceRetrieval:
 
     @pytest.mark.asyncio
     async def test_get_registered_device(self, async_client):
-        """Test retrieving a registered device."""
+        """Test retrieving a registered device with authentication."""
         # First register a device
         register_response = await async_client.post(
             "/api/v1/devices/register",
@@ -188,20 +205,88 @@ class TestDeviceRetrieval:
         )
         assert register_response.status_code == 201
         device_id = register_response.json()["device_id"]
+        auth_token = register_response.json()["auth_token"]
 
-        # Then retrieve it
-        get_response = await async_client.get(f"/api/v1/devices/{device_id}")
+        # Then retrieve it with authentication
+        get_response = await async_client.get(
+            f"/api/v1/devices/{device_id}",
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
 
         assert get_response.status_code == 200
         data = get_response.json()
         assert data["device_id"] == device_id
         assert data["device_name"] == "Test Device"
         assert data["device_type"] == "desktop"
+        # auth_token should NOT be returned in GET response
+        assert "auth_token" not in data
+
+    @pytest.mark.asyncio
+    async def test_get_registered_device_without_auth(self, async_client):
+        """Test retrieving a device without authentication returns 401."""
+        register_response = await async_client.post(
+            "/api/v1/devices/register",
+            json={"device_name": "Test Device", "device_type": "desktop"},
+        )
+        assert register_response.status_code == 201
+        device_id = register_response.json()["device_id"]
+
+        get_response = await async_client.get(f"/api/v1/devices/{device_id}")
+        assert get_response.status_code == 401
+
+    @pytest.mark.asyncio
+    async def test_get_registered_device_with_invalid_auth(self, async_client):
+        """Test retrieving a device with invalid token returns 401."""
+        register_response = await async_client.post(
+            "/api/v1/devices/register",
+            json={"device_name": "Test Device", "device_type": "desktop"},
+        )
+        assert register_response.status_code == 201
+        device_id = register_response.json()["device_id"]
+
+        get_response = await async_client.get(
+            f"/api/v1/devices/{device_id}",
+            headers={"Authorization": "Bearer invalid_token"},
+        )
+        assert get_response.status_code == 401
+
+    @pytest.mark.asyncio
+    async def test_get_another_device_forbidden(self, async_client):
+        """Test that a device cannot access another device's info."""
+        # Register two devices
+        reg1 = await async_client.post(
+            "/api/v1/devices/register",
+            json={"device_name": "Device 1", "device_type": "mobile"},
+        )
+        reg2 = await async_client.post(
+            "/api/v1/devices/register",
+            json={"device_name": "Device 2", "device_type": "desktop"},
+        )
+        device1_id = reg1.json()["device_id"]
+        device2_id = reg2.json()["device_id"]
+        token1 = reg1.json()["auth_token"]
+
+        # Device 1 tries to access Device 2's info - should be forbidden
+        response = await async_client.get(
+            f"/api/v1/devices/{device2_id}",
+            headers={"Authorization": f"Bearer {token1}"},
+        )
+        assert response.status_code == 403
 
     @pytest.mark.asyncio
     async def test_unknown_device_lookup(self, async_client):
         """Test retrieving a non-existent device returns 404."""
-        response = await async_client.get("/api/v1/devices/non-existent-id")
+        # Register a device first to get a valid token
+        register_response = await async_client.post(
+            "/api/v1/devices/register",
+            json={"device_name": "Test Device", "device_type": "desktop"},
+        )
+        auth_token = register_response.json()["auth_token"]
+
+        response = await async_client.get(
+            "/api/v1/devices/non-existent-id",
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
 
         assert response.status_code == 404
         error_data = response.json()
@@ -214,7 +299,17 @@ class TestDeviceRetrieval:
         import uuid
         fake_uuid = str(uuid.uuid4())
 
-        response = await async_client.get(f"/api/v1/devices/{fake_uuid}")
+        # Register a device first to get a valid token
+        register_response = await async_client.post(
+            "/api/v1/devices/register",
+            json={"device_name": "Test Device", "device_type": "desktop"},
+        )
+        auth_token = register_response.json()["auth_token"]
+
+        response = await async_client.get(
+            f"/api/v1/devices/{fake_uuid}",
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
 
         assert response.status_code == 404
 
@@ -228,11 +323,13 @@ class TestDeviceRegistryService:
         from app.models.device import DeviceRegistrationRequest
 
         request = DeviceRegistrationRequest(device_name="Direct Test", device_type=DeviceType.MOBILE)
-        device = await device_registry.register(request)
+        device, auth_token = await device_registry.register(request)
 
         assert device.device_name == "Direct Test"
         assert device.device_type == DeviceType.MOBILE
         assert len(device.device_id) > 0
+        assert auth_token.startswith("synk_")
+        assert len(auth_token) == 69
 
         # Retrieve it
         retrieved = await device_registry.get(device.device_id)
@@ -246,7 +343,7 @@ class TestDeviceRegistryService:
         from app.models.device import DeviceRegistrationRequest
 
         request = DeviceRegistrationRequest(device_name="Exists Test", device_type=DeviceType.DESKTOP)
-        device = await device_registry.register(request)
+        device, _ = await device_registry.register(request)
 
         assert await device_registry.exists(device.device_id) is True
         assert await device_registry.exists("non-existent") is False

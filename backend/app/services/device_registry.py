@@ -8,10 +8,12 @@ from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
+from uuid import UUID
 
 from app.db.database import database
 from app.models.device import Device, DeviceType, DeviceRegistrationRequest
 from app.repositories.device_repository import DeviceRepository
+from app.services.auth_service import auth_service
 
 
 class DeviceRegistry:
@@ -25,14 +27,15 @@ class DeviceRegistry:
         """Get a database session."""
         return database._session_factory()
 
-    async def register(self, request: DeviceRegistrationRequest) -> Device:
-        """Register a new device.
+    async def register(self, request: DeviceRegistrationRequest) -> tuple[Device, str]:
+        """Register a new device and generate an authentication token.
 
         Args:
             request: Device registration request with name and type.
 
         Returns:
-            The registered device with generated device_id.
+            Tuple of (Device, auth_token) where auth_token is the raw token
+            that must be stored securely by the client. Only returned once.
         """
         async with self._lock:
             async with database.session() as session:
@@ -41,8 +44,10 @@ class DeviceRegistry:
                     device_name=request.device_name,
                     device_type=request.device_type.value,
                 )
+                # Create auth token for the device
+                raw_token, _ = await auth_service.create_token(session, device_model.id)
                 await session.commit()
-                return self._model_to_device(device_model)
+                return self._model_to_device(device_model), raw_token
 
     async def get(self, device_id: str) -> Optional[Device]:
         """Retrieve a device by its ID.
