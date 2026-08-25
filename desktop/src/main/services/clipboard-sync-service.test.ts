@@ -5,6 +5,7 @@ import { ClipboardSyncService, ClipboardSyncState } from './clipboard-sync-servi
 import { SynkWebSocketClient, WebSocketConnectionState } from './websocket-client';
 import { ClipboardService } from './clipboard-service';
 import {
+  ContentType,
   SyncMessageType,
   ServerMessage,
   ClipboardUpdateRelayMessage,
@@ -241,7 +242,7 @@ describe('ClipboardSyncService', () => {
         message_id: generateMessageId(),
         device_id: deviceId,
         timestamp: generateTimestamp(),
-        payload: { content_type: 'text', text: 'Self message' },
+        payload: { content_type: ContentType.TEXT, text: 'Self message' },
         source_device_id: deviceId, // Same as our device
       };
 
@@ -264,7 +265,7 @@ describe('ClipboardSyncService', () => {
         message_id: generateMessageId(),
         device_id: deviceId,
         timestamp: generateTimestamp(),
-        payload: { content_type: 'text', text: 'Hello from other device' },
+        payload: { content_type: ContentType.TEXT, text: 'Hello from other device' },
         source_device_id: sourceDeviceId,
       };
 
@@ -286,7 +287,7 @@ describe('ClipboardSyncService', () => {
         message_id: messageId,
         device_id: deviceId,
         timestamp: generateTimestamp(),
-        payload: { content_type: 'text', text: 'First message' },
+        payload: { content_type: ContentType.TEXT, text: 'First message' },
         source_device_id: 'other-device',
       };
 
@@ -313,7 +314,7 @@ describe('ClipboardSyncService', () => {
         message_id: generateMessageId(),
         device_id: deviceId,
         timestamp: generateTimestamp(),
-        payload: { content_type: 'text', text: '' },
+        payload: { content_type: ContentType.TEXT, text: '' },
         source_device_id: 'other-device',
       };
 
@@ -330,7 +331,7 @@ describe('ClipboardSyncService', () => {
         message_id: 'msg-123',
         device_id: deviceId,
         timestamp: generateTimestamp(),
-        payload: { content_type: 'text', text: 'Test message' },
+        payload: { content_type: ContentType.TEXT, text: 'Test message' },
         source_device_id: 'other-device',
       };
 
