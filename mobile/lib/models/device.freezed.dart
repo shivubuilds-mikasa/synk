@@ -15,8 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Device {
 
- String get deviceId; String get deviceName; DeviceType get deviceType;// Auth token is optional - only present during registration
- String? get authToken;
+@JsonKey(name: 'device_id') String get deviceId;@JsonKey(name: 'device_name') String get deviceName;@JsonKey(name: 'device_type') DeviceType get deviceType;// Auth token is optional - only present during registration.
+@JsonKey(name: 'auth_token') String? get authToken;
 /// Create a copy of Device
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -49,7 +49,7 @@ abstract mixin class $DeviceCopyWith<$Res>  {
   factory $DeviceCopyWith(Device value, $Res Function(Device) _then) = _$DeviceCopyWithImpl;
 @useResult
 $Res call({
- String deviceId, String deviceName, DeviceType deviceType, String? authToken
+@JsonKey(name: 'device_id') String deviceId,@JsonKey(name: 'device_name') String deviceName,@JsonKey(name: 'device_type') DeviceType deviceType,@JsonKey(name: 'auth_token') String? authToken
 });
 
 
@@ -157,7 +157,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String deviceId,  String deviceName,  DeviceType deviceType,  String? authToken)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'device_id')  String deviceId, @JsonKey(name: 'device_name')  String deviceName, @JsonKey(name: 'device_type')  DeviceType deviceType, @JsonKey(name: 'auth_token')  String? authToken)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Device() when $default != null:
 return $default(_that.deviceId,_that.deviceName,_that.deviceType,_that.authToken);case _:
@@ -178,7 +178,7 @@ return $default(_that.deviceId,_that.deviceName,_that.deviceType,_that.authToken
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String deviceId,  String deviceName,  DeviceType deviceType,  String? authToken)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'device_id')  String deviceId, @JsonKey(name: 'device_name')  String deviceName, @JsonKey(name: 'device_type')  DeviceType deviceType, @JsonKey(name: 'auth_token')  String? authToken)  $default,) {final _that = this;
 switch (_that) {
 case _Device():
 return $default(_that.deviceId,_that.deviceName,_that.deviceType,_that.authToken);case _:
@@ -198,7 +198,7 @@ return $default(_that.deviceId,_that.deviceName,_that.deviceType,_that.authToken
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String deviceId,  String deviceName,  DeviceType deviceType,  String? authToken)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'device_id')  String deviceId, @JsonKey(name: 'device_name')  String deviceName, @JsonKey(name: 'device_type')  DeviceType deviceType, @JsonKey(name: 'auth_token')  String? authToken)?  $default,) {final _that = this;
 switch (_that) {
 case _Device() when $default != null:
 return $default(_that.deviceId,_that.deviceName,_that.deviceType,_that.authToken);case _:
@@ -213,14 +213,14 @@ return $default(_that.deviceId,_that.deviceName,_that.deviceType,_that.authToken
 @JsonSerializable()
 
 class _Device implements Device {
-  const _Device({required this.deviceId, required this.deviceName, required this.deviceType, this.authToken = null});
+  const _Device({@JsonKey(name: 'device_id') required this.deviceId, @JsonKey(name: 'device_name') required this.deviceName, @JsonKey(name: 'device_type') required this.deviceType, @JsonKey(name: 'auth_token') this.authToken = null});
   factory _Device.fromJson(Map<String, dynamic> json) => _$DeviceFromJson(json);
 
-@override final  String deviceId;
-@override final  String deviceName;
-@override final  DeviceType deviceType;
-// Auth token is optional - only present during registration
-@override@JsonKey() final  String? authToken;
+@override@JsonKey(name: 'device_id') final  String deviceId;
+@override@JsonKey(name: 'device_name') final  String deviceName;
+@override@JsonKey(name: 'device_type') final  DeviceType deviceType;
+// Auth token is optional - only present during registration.
+@override@JsonKey(name: 'auth_token') final  String? authToken;
 
 /// Create a copy of Device
 /// with the given fields replaced by the non-null parameter values.
@@ -255,7 +255,7 @@ abstract mixin class _$DeviceCopyWith<$Res> implements $DeviceCopyWith<$Res> {
   factory _$DeviceCopyWith(_Device value, $Res Function(_Device) _then) = __$DeviceCopyWithImpl;
 @override @useResult
 $Res call({
- String deviceId, String deviceName, DeviceType deviceType, String? authToken
+@JsonKey(name: 'device_id') String deviceId,@JsonKey(name: 'device_name') String deviceName,@JsonKey(name: 'device_type') DeviceType deviceType,@JsonKey(name: 'auth_token') String? authToken
 });
 
 
@@ -289,7 +289,7 @@ as String?,
 /// @nodoc
 mixin _$DeviceRegistrationRequest {
 
- String get deviceName; DeviceType get deviceType;
+@JsonKey(name: 'device_name') String get deviceName;@JsonKey(name: 'device_type') DeviceType get deviceType;
 /// Create a copy of DeviceRegistrationRequest
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -322,7 +322,7 @@ abstract mixin class $DeviceRegistrationRequestCopyWith<$Res>  {
   factory $DeviceRegistrationRequestCopyWith(DeviceRegistrationRequest value, $Res Function(DeviceRegistrationRequest) _then) = _$DeviceRegistrationRequestCopyWithImpl;
 @useResult
 $Res call({
- String deviceName, DeviceType deviceType
+@JsonKey(name: 'device_name') String deviceName,@JsonKey(name: 'device_type') DeviceType deviceType
 });
 
 
@@ -428,7 +428,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String deviceName,  DeviceType deviceType)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'device_name')  String deviceName, @JsonKey(name: 'device_type')  DeviceType deviceType)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DeviceRegistrationRequest() when $default != null:
 return $default(_that.deviceName,_that.deviceType);case _:
@@ -449,7 +449,7 @@ return $default(_that.deviceName,_that.deviceType);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String deviceName,  DeviceType deviceType)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'device_name')  String deviceName, @JsonKey(name: 'device_type')  DeviceType deviceType)  $default,) {final _that = this;
 switch (_that) {
 case _DeviceRegistrationRequest():
 return $default(_that.deviceName,_that.deviceType);case _:
@@ -469,7 +469,7 @@ return $default(_that.deviceName,_that.deviceType);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String deviceName,  DeviceType deviceType)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'device_name')  String deviceName, @JsonKey(name: 'device_type')  DeviceType deviceType)?  $default,) {final _that = this;
 switch (_that) {
 case _DeviceRegistrationRequest() when $default != null:
 return $default(_that.deviceName,_that.deviceType);case _:
@@ -484,11 +484,11 @@ return $default(_that.deviceName,_that.deviceType);case _:
 @JsonSerializable()
 
 class _DeviceRegistrationRequest implements DeviceRegistrationRequest {
-  const _DeviceRegistrationRequest({required this.deviceName, required this.deviceType});
+  const _DeviceRegistrationRequest({@JsonKey(name: 'device_name') required this.deviceName, @JsonKey(name: 'device_type') required this.deviceType});
   factory _DeviceRegistrationRequest.fromJson(Map<String, dynamic> json) => _$DeviceRegistrationRequestFromJson(json);
 
-@override final  String deviceName;
-@override final  DeviceType deviceType;
+@override@JsonKey(name: 'device_name') final  String deviceName;
+@override@JsonKey(name: 'device_type') final  DeviceType deviceType;
 
 /// Create a copy of DeviceRegistrationRequest
 /// with the given fields replaced by the non-null parameter values.
@@ -523,7 +523,7 @@ abstract mixin class _$DeviceRegistrationRequestCopyWith<$Res> implements $Devic
   factory _$DeviceRegistrationRequestCopyWith(_DeviceRegistrationRequest value, $Res Function(_DeviceRegistrationRequest) _then) = __$DeviceRegistrationRequestCopyWithImpl;
 @override @useResult
 $Res call({
- String deviceName, DeviceType deviceType
+@JsonKey(name: 'device_name') String deviceName,@JsonKey(name: 'device_type') DeviceType deviceType
 });
 
 
@@ -555,7 +555,7 @@ as DeviceType,
 /// @nodoc
 mixin _$DeviceRegistrationResponse {
 
- String get deviceId; String get deviceName; DeviceType get deviceType; String get authToken;
+@JsonKey(name: 'device_id') String get deviceId;@JsonKey(name: 'device_name') String get deviceName;@JsonKey(name: 'device_type') DeviceType get deviceType;@JsonKey(name: 'auth_token') String get authToken;
 /// Create a copy of DeviceRegistrationResponse
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -588,7 +588,7 @@ abstract mixin class $DeviceRegistrationResponseCopyWith<$Res>  {
   factory $DeviceRegistrationResponseCopyWith(DeviceRegistrationResponse value, $Res Function(DeviceRegistrationResponse) _then) = _$DeviceRegistrationResponseCopyWithImpl;
 @useResult
 $Res call({
- String deviceId, String deviceName, DeviceType deviceType, String authToken
+@JsonKey(name: 'device_id') String deviceId,@JsonKey(name: 'device_name') String deviceName,@JsonKey(name: 'device_type') DeviceType deviceType,@JsonKey(name: 'auth_token') String authToken
 });
 
 
@@ -696,7 +696,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String deviceId,  String deviceName,  DeviceType deviceType,  String authToken)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'device_id')  String deviceId, @JsonKey(name: 'device_name')  String deviceName, @JsonKey(name: 'device_type')  DeviceType deviceType, @JsonKey(name: 'auth_token')  String authToken)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DeviceRegistrationResponse() when $default != null:
 return $default(_that.deviceId,_that.deviceName,_that.deviceType,_that.authToken);case _:
@@ -717,7 +717,7 @@ return $default(_that.deviceId,_that.deviceName,_that.deviceType,_that.authToken
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String deviceId,  String deviceName,  DeviceType deviceType,  String authToken)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'device_id')  String deviceId, @JsonKey(name: 'device_name')  String deviceName, @JsonKey(name: 'device_type')  DeviceType deviceType, @JsonKey(name: 'auth_token')  String authToken)  $default,) {final _that = this;
 switch (_that) {
 case _DeviceRegistrationResponse():
 return $default(_that.deviceId,_that.deviceName,_that.deviceType,_that.authToken);case _:
@@ -737,7 +737,7 @@ return $default(_that.deviceId,_that.deviceName,_that.deviceType,_that.authToken
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String deviceId,  String deviceName,  DeviceType deviceType,  String authToken)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'device_id')  String deviceId, @JsonKey(name: 'device_name')  String deviceName, @JsonKey(name: 'device_type')  DeviceType deviceType, @JsonKey(name: 'auth_token')  String authToken)?  $default,) {final _that = this;
 switch (_that) {
 case _DeviceRegistrationResponse() when $default != null:
 return $default(_that.deviceId,_that.deviceName,_that.deviceType,_that.authToken);case _:
@@ -752,13 +752,13 @@ return $default(_that.deviceId,_that.deviceName,_that.deviceType,_that.authToken
 @JsonSerializable()
 
 class _DeviceRegistrationResponse implements DeviceRegistrationResponse {
-  const _DeviceRegistrationResponse({required this.deviceId, required this.deviceName, required this.deviceType, required this.authToken});
+  const _DeviceRegistrationResponse({@JsonKey(name: 'device_id') required this.deviceId, @JsonKey(name: 'device_name') required this.deviceName, @JsonKey(name: 'device_type') required this.deviceType, @JsonKey(name: 'auth_token') required this.authToken});
   factory _DeviceRegistrationResponse.fromJson(Map<String, dynamic> json) => _$DeviceRegistrationResponseFromJson(json);
 
-@override final  String deviceId;
-@override final  String deviceName;
-@override final  DeviceType deviceType;
-@override final  String authToken;
+@override@JsonKey(name: 'device_id') final  String deviceId;
+@override@JsonKey(name: 'device_name') final  String deviceName;
+@override@JsonKey(name: 'device_type') final  DeviceType deviceType;
+@override@JsonKey(name: 'auth_token') final  String authToken;
 
 /// Create a copy of DeviceRegistrationResponse
 /// with the given fields replaced by the non-null parameter values.
@@ -793,7 +793,7 @@ abstract mixin class _$DeviceRegistrationResponseCopyWith<$Res> implements $Devi
   factory _$DeviceRegistrationResponseCopyWith(_DeviceRegistrationResponse value, $Res Function(_DeviceRegistrationResponse) _then) = __$DeviceRegistrationResponseCopyWithImpl;
 @override @useResult
 $Res call({
- String deviceId, String deviceName, DeviceType deviceType, String authToken
+@JsonKey(name: 'device_id') String deviceId,@JsonKey(name: 'device_name') String deviceName,@JsonKey(name: 'device_type') DeviceType deviceType,@JsonKey(name: 'auth_token') String authToken
 });
 
 

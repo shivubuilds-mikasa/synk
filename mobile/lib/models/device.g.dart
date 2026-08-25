@@ -7,17 +7,17 @@ part of 'device.dart';
 // **************************************************************************
 
 _Device _$DeviceFromJson(Map<String, dynamic> json) => _Device(
-  deviceId: json['deviceId'] as String,
-  deviceName: json['deviceName'] as String,
-  deviceType: $enumDecode(_$DeviceTypeEnumMap, json['deviceType']),
-  authToken: json['authToken'] as String? ?? null,
+  deviceId: json['device_id'] as String,
+  deviceName: json['device_name'] as String,
+  deviceType: $enumDecode(_$DeviceTypeEnumMap, json['device_type']),
+  authToken: json['auth_token'] as String? ?? null,
 );
 
 Map<String, dynamic> _$DeviceToJson(_Device instance) => <String, dynamic>{
-  'deviceId': instance.deviceId,
-  'deviceName': instance.deviceName,
-  'deviceType': _$DeviceTypeEnumMap[instance.deviceType]!,
-  'authToken': instance.authToken,
+  'device_id': instance.deviceId,
+  'device_name': instance.deviceName,
+  'device_type': _$DeviceTypeEnumMap[instance.deviceType]!,
+  'auth_token': instance.authToken,
 };
 
 const _$DeviceTypeEnumMap = {
@@ -28,31 +28,31 @@ const _$DeviceTypeEnumMap = {
 _DeviceRegistrationRequest _$DeviceRegistrationRequestFromJson(
   Map<String, dynamic> json,
 ) => _DeviceRegistrationRequest(
-  deviceName: json['deviceName'] as String,
-  deviceType: $enumDecode(_$DeviceTypeEnumMap, json['deviceType']),
+  deviceName: json['device_name'] as String,
+  deviceType: $enumDecode(_$DeviceTypeEnumMap, json['device_type']),
 );
 
 Map<String, dynamic> _$DeviceRegistrationRequestToJson(
   _DeviceRegistrationRequest instance,
 ) => <String, dynamic>{
-  'deviceName': instance.deviceName,
-  'deviceType': _$DeviceTypeEnumMap[instance.deviceType]!,
+  'device_name': instance.deviceName,
+  'device_type': _$DeviceTypeEnumMap[instance.deviceType]!,
 };
 
 _DeviceRegistrationResponse _$DeviceRegistrationResponseFromJson(
   Map<String, dynamic> json,
 ) => _DeviceRegistrationResponse(
-  deviceId: json['deviceId'] as String,
-  deviceName: json['deviceName'] as String,
-  deviceType: $enumDecode(_$DeviceTypeEnumMap, json['deviceType']),
-  authToken: json['authToken'] as String,
+  deviceId: json['device_id'] as String,
+  deviceName: json['device_name'] as String,
+  deviceType: $enumDecode(_$DeviceTypeEnumMap, json['device_type']),
+  authToken: json['auth_token'] as String,
 );
 
 Map<String, dynamic> _$DeviceRegistrationResponseToJson(
   _DeviceRegistrationResponse instance,
 ) => <String, dynamic>{
-  'deviceId': instance.deviceId,
-  'deviceName': instance.deviceName,
-  'deviceType': _$DeviceTypeEnumMap[instance.deviceType]!,
-  'authToken': instance.authToken,
+  'device_id': instance.deviceId,
+  'device_name': instance.deviceName,
+  'device_type': _$DeviceTypeEnumMap[instance.deviceType]!,
+  'auth_token': instance.authToken,
 };
