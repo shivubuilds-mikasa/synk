@@ -9,6 +9,29 @@ from app.models.pairing import (
     PairedDeviceInfo,
     PairedDevicesResponse,
 )
+from app.models.sync import (
+    SyncMessageType,
+    ContentType,
+    ClipboardPayload,
+    SyncMessageBase,
+    ClipboardUpdateMessage,
+    PingMessage,
+    ClipboardUpdateReceivedMessage,
+    ClipboardUpdateRelayMessage,
+    PongMessage,
+    ErrorMessage,
+    AckMessage,
+    ClientMessage,
+    ServerMessage,
+    SyncMessage,
+    MessageValidator,
+    create_error_message,
+    create_ack_message,
+)
+from app.models.clipboard import (
+    ClipboardHistoryEntry,
+    ClipboardHistoryResponse,
+)
 
 __all__ = [
     "Device",
@@ -21,4 +44,23 @@ __all__ = [
     "PairingCreateResponse",
     "PairedDeviceInfo",
     "PairedDevicesResponse",
+    "SyncMessageType",
+    "ContentType",
+    "ClipboardPayload",
+    "SyncMessageBase",
+    "ClipboardUpdateMessage",
+    "PingMessage",
+    "ClipboardUpdateReceivedMessage",
+    "ClipboardUpdateRelayMessage",
+    "PongMessage",
+    "ErrorMessage",
+    "AckMessage",
+    "ClientMessage",
+    "ServerMessage",
+    "SyncMessage",
+    "MessageValidator",
+    "create_error_message",
+    "create_ack_message",
+    "ClipboardHistoryEntry",
+    "ClipboardHistoryResponse",
 ]

@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.api.routes import devices, health, pairing, websocket
+from app.api.routes import devices, health, pairing, websocket, clipboard
 from app.core.config import settings
 from app.db.database import database
 
@@ -24,3 +24,4 @@ app.include_router(health.router)
 app.include_router(devices.router)
 app.include_router(pairing.router)
 app.include_router(websocket.router)
+app.include_router(clipboard.router)

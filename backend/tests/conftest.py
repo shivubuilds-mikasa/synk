@@ -12,6 +12,7 @@ from app.main import app
 from app.db.database import database
 from app.db.models import Base
 from app.core.config import settings
+from app.core.ws_manager import manager
 
 # Ensure pytest-asyncio is configured
 pytest_plugins = ["pytest_asyncio"]
@@ -120,3 +121,44 @@ async def clear_registries():
     yield
     # Clear again after test
     pairing_registry._pending_pairings.clear()
+
+
+@pytest.fixture
+async def registered_device(async_client):
+    """Register a test device and return its info."""
+    response = await async_client.post(
+        "/api/v1/devices/register",
+        json={"device_name": "Test Device", "device_type": "mobile"},
+    )
+    assert response.status_code == 201
+    return response.json()
+
+
+@pytest.fixture
+def auth_headers(registered_device):
+    """Return auth headers for the registered device."""
+    return {"Authorization": f"Bearer {registered_device['auth_token']}"}
+
+
+@pytest.fixture
+async def ws_client(registered_device):
+    """Create a WebSocket connection for testing."""
+    from httpx import ASGITransport, AsyncClient
+    import websockets
+
+    # For now, return a mock - we'll use direct manager testing for clipboard tests
+    # Actual WS integration tests would need a running server
+    class MockWSClient:
+        def __init__(self):
+            self.device_id = registered_device["device_id"]
+            self.auth_token = registered_device["auth_token"]
+            self.messages = []
+
+        async def send_json(self, data):
+            # Directly call the websocket handler logic
+            pass
+
+        async def receive_json(self):
+            return {}
+
+    return MockWSClient()

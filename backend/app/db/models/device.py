@@ -13,6 +13,7 @@ from app.models.device import DeviceType
 if TYPE_CHECKING:
     from app.db.models.pairing import PairingModel
     from app.db.models.auth import AuthTokenModel
+    from app.db.models.clipboard import ClipboardHistoryModel
 
 
 class DeviceModel(Base, TimestampMixin):
@@ -46,6 +47,12 @@ class DeviceModel(Base, TimestampMixin):
     )
     auth_tokens: Mapped[list["AuthTokenModel"]] = relationship(
         "AuthTokenModel",
+        back_populates="device",
+        lazy="selectin",
+    )
+    clipboard_history: Mapped[list["ClipboardHistoryModel"]] = relationship(
+        "ClipboardHistoryModel",
+        foreign_keys="ClipboardHistoryModel.device_id",
         back_populates="device",
         lazy="selectin",
     )

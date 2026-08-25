@@ -6,30 +6,617 @@
   <title>Synk Desktop</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1a1a2e; color: #eee; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    .container { text-align: center; padding: 2rem; }
-    h1 { font-size: 3rem; margin-bottom: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    p { font-size: 1.2rem; color: #888; }
-    .status { margin-top: 2rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px; font-family: monospace; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .subtitle { font-size: 1.1rem; color: #888; }
+
+    .card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .status-badge.connected { background: rgba(74,222,128,0.15); color: #4ade80; }
+    .status-badge.connecting { background: rgba(251,191,36,0.15); color: #fbbf24; }
+    .status-badge.reconnecting { background: rgba(251,191,36,0.15); color: #fbbf24; }
+    .status-badge.disconnected { background: rgba(136,136,136,0.15); color: #888; }
+    .status-badge.error { background: rgba(248,113,113,0.15); color: #f87171; }
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .status-badge.connected .status-indicator { background: #4ade80; }
+    .status-badge.connecting .status-indicator { background: #fbbf24; animation: pulse 1s ease-in-out infinite; }
+    .status-badge.reconnecting .status-indicator { background: #fbbf24; animation: pulse 1s ease-in-out infinite; }
+    .status-badge.disconnected .status-indicator { background: #888; }
+    .status-badge.error .status-indicator { background: #f87171; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      text-align: left;
+    }
+    .info-item {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+    .info-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #666; margin-bottom: 0.25rem; }
+    .info-value { font-family: monospace; font-size: 0.9rem; word-break: break-all; color: #ddd; }
+
+    .clipboard-preview {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+      text-align: left;
+    }
+    .clipboard-preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+      color: #888;
+    }
+    .clipboard-content {
+      font-family: monospace;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 200px;
+      overflow-y: auto;
+      color: #ddd;
+    }
+    .clipboard-meta {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+      color: #888;
+    }
+    .clipboard-empty {
+      color: #666;
+      font-style: italic;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .paired-devices {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .paired-device {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 8px;
+    }
+    .paired-device-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .paired-device-name {
+      font-weight: 500;
+    }
+    .paired-device-id {
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: #888;
+    }
+    .paired-device-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+    }
+    .device-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .device-status-dot.online { background: #4ade80; }
+    .device-status-dot.offline { background: #888; }
+
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .btn {
+      padding: 0.625rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-secondary {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #ddd;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .error-message {
+      background: rgba(248,113,113,0.1);
+      border: 1px solid rgba(248,113,113,0.3);
+      border-radius: 8px;
+      padding: 1rem;
+      color: #fca5a5;
+      font-size: 0.9rem;
+      text-align: left;
+      margin-bottom: 1rem;
+    }
+    .hidden { display: none !important; }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .history-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.75rem;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 8px;
+    }
+    .history-item-content {
+      flex: 1;
+      font-family: monospace;
+      font-size: 0.85rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #ddd;
+    }
+    .history-item-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      font-size: 0.7rem;
+      color: #888;
+      white-space: nowrap;
+    }
+    .history-empty {
+      color: #666;
+      font-style: italic;
+      text-align: center;
+      padding: 2rem;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Synk Desktop</h1>
-    <p>Electron + TypeScript scaffold ready</p>
-    <div class="status" id="status">Waiting for preload...</div>
+    <header>
+      <h1>Synk Desktop</h1>
+      <p class="subtitle">Cross-device clipboard synchronization</p>
+    </header>
+
+    <!-- Device Status Card -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Device Status</span>
+        <span class="status-badge uninitialized" id="deviceStatusBadge">
+          <span class="status-indicator"></span>
+          <span id="deviceStatusText">Initializing...</span>
+        </span>
+      </div>
+      <div class="info-grid" id="deviceInfoGrid">
+        <div class="info-item">
+          <div class="info-label">Device Name</div>
+          <div class="info-value" id="deviceName">-</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Device ID</div>
+          <div class="info-value" id="deviceId">-</div>
+        </div>
+      </div>
+      <div class="error-message hidden" id="deviceErrorMessage"></div>
+    </div>
+
+    <!-- Clipboard Sync Status Card -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Clipboard Sync</span>
+        <span class="status-badge disconnected" id="syncStatusBadge">
+          <span class="status-indicator"></span>
+          <span id="syncStatusText">Disconnected</span>
+        </span>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" id="syncHistoryBtn" disabled>Request History Sync</button>
+        <button class="btn btn-secondary" id="copyLatestBtn" disabled>Copy Latest</button>
+      </div>
+    </div>
+
+    <!-- Latest Clipboard Card -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Latest Clipboard</span>
+        <span id="clipboardSource" class="clipboard-preview-header" style="display: none;"></span>
+      </div>
+      <div class="clipboard-preview">
+        <div class="clipboard-empty" id="clipboardEmpty">No clipboard content synced yet</div>
+        <div class="clipboard-content hidden" id="clipboardContent"></div>
+        <div class="clipboard-meta hidden" id="clipboardMeta"></div>
+      </div>
+    </div>
+
+    <!-- Paired Devices Card -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Paired Devices</span>
+      </div>
+      <div class="paired-devices" id="pairedDevicesList">
+        <div class="clipboard-empty">No paired devices online</div>
+      </div>
+    </div>
+
+    <!-- Clipboard History Card -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Clipboard History</span>
+      </div>
+      <div class="history-list" id="historyList">
+        <div class="history-empty">History will appear after sync</div>
+      </div>
+    </div>
   </div>
+
   <script>
-    // Wait for preload to expose API
-    window.addEventListener('DOMContentLoaded', async () => {
-      const status = document.getElementById('status');
+    // Type definitions for the exposed API
+    interface DeviceInfo {
+      deviceId: string;
+      deviceName: string;
+      deviceType: 'mobile' | 'desktop';
+    }
+
+    interface DeviceState {
+      authState: 'uninitialized' | 'registering' | 'authenticated' | 'error';
+      deviceInfo: DeviceInfo | null;
+      error: string | null;
+    }
+
+    type ClipboardSyncState = 'disconnected' | 'connecting' | 'connected' | 'reconnecting' | 'error';
+
+    // DOM elements
+    const deviceStatusBadge = document.getElementById('deviceStatusBadge');
+    const deviceStatusText = document.getElementById('deviceStatusText');
+    const deviceInfoGrid = document.getElementById('deviceInfoGrid');
+    const deviceNameEl = document.getElementById('deviceName');
+    const deviceIdEl = document.getElementById('deviceId');
+    const deviceErrorMessage = document.getElementById('deviceErrorMessage');
+
+    const syncStatusBadge = document.getElementById('syncStatusBadge');
+    const syncStatusText = document.getElementById('syncStatusText');
+    const syncHistoryBtn = document.getElementById('syncHistoryBtn');
+    const copyLatestBtn = document.getElementById('copyLatestBtn');
+
+    const clipboardEmpty = document.getElementById('clipboardEmpty');
+    const clipboardContent = document.getElementById('clipboardContent');
+    const clipboardMeta = document.getElementById('clipboardMeta');
+    const clipboardSource = document.getElementById('clipboardSource');
+
+    const pairedDevicesList = document.getElementById('pairedDevicesList');
+    const historyList = document.getElementById('historyList');
+
+    // State
+    let latestClipboardText = '';
+    let latestSourceDeviceId = '';
+    let pairedDevices = new Map<string, { name: string; online: boolean }>();
+
+    // State to class mapping
+    const deviceStateClasses = {
+      uninitialized: 'uninitialized',
+      registering: 'registering',
+      authenticated: 'authenticated',
+      error: 'error',
+    };
+
+    const deviceStateLabels = {
+      uninitialized: 'Not Initialized',
+      registering: 'Registering...',
+      authenticated: 'Authenticated',
+      error: 'Registration Failed',
+    };
+
+    const syncStateClasses = {
+      disconnected: 'disconnected',
+      connecting: 'connecting',
+      connected: 'connected',
+      reconnecting: 'reconnecting',
+      error: 'error',
+    };
+
+    const syncStateLabels = {
+      disconnected: 'Disconnected',
+      connecting: 'Connecting...',
+      connected: 'Connected',
+      reconnecting: 'Reconnecting...',
+      error: 'Error',
+    };
+
+    /** Update device status UI */
+    function updateDeviceUI(state: DeviceState) {
+      deviceStatusBadge.className = 'status-badge ' + deviceStateClasses[state.authState];
+      deviceStatusText.textContent = deviceStateLabels[state.authState];
+
+      if (state.deviceInfo) {
+        deviceInfoGrid.classList.remove('hidden');
+        deviceNameEl.textContent = state.deviceInfo.deviceName;
+        deviceIdEl.textContent = state.deviceInfo.deviceId;
+      } else {
+        deviceInfoGrid.classList.add('hidden');
+      }
+
+      if (state.error) {
+        deviceErrorMessage.classList.remove('hidden');
+        deviceErrorMessage.textContent = state.error;
+      } else {
+        deviceErrorMessage.classList.add('hidden');
+      }
+
+      // Enable sync history button when authenticated
+      syncHistoryBtn.disabled = state.authState !== 'authenticated';
+    }
+
+    /** Update clipboard sync status UI */
+    function updateSyncUI(state: ClipboardSyncState) {
+      syncStatusBadge.className = 'status-badge ' + syncStateClasses[state];
+      syncStatusText.textContent = syncStateLabels[state];
+
+      // Enable/disable buttons based on connection state
+      const isConnected = state === 'connected';
+      syncHistoryBtn.disabled = !isConnected;
+      copyLatestBtn.disabled = !isConnected || !latestClipboardText;
+    }
+
+    /** Update latest clipboard preview */
+    function updateClipboardPreview(text: string, sourceDeviceId: string) {
+      latestClipboardText = text;
+      latestSourceDeviceId = sourceDeviceId;
+
+      clipboardEmpty.classList.add('hidden');
+      clipboardContent.classList.remove('hidden');
+      clipboardContent.textContent = text;
+      clipboardMeta.classList.remove('hidden');
+
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString();
+      clipboardMeta.innerHTML = `
+        <span>Source: ${sourceDeviceId}</span>
+        <span>Received: ${timeStr}</span>
+        <span>Length: ${text.length} chars</span>
+      `;
+
+      clipboardSource.style.display = 'flex';
+      clipboardSource.innerHTML = `
+        <span>From: ${sourceDeviceId}</span>
+        <button class="btn btn-secondary" style="padding: 0.25rem 0.75rem; font-size: 0.75rem;" onclick="copyToClipboard('${escapeHtml(text)}')">Copy</span>
+      `;
+
+      copyLatestBtn.disabled = false;
+
+      // Add to history
+      addToHistory(text, sourceDeviceId, now);
+    }
+
+    /** Add item to history */
+    function addToHistory(text: string, sourceDeviceId: string, timestamp: Date) {
+      const emptyMsg = historyList.querySelector('.history-empty');
+      if (emptyMsg) emptyMsg.remove();
+
+      const item = document.createElement('div');
+      item.className = 'history-item';
+
+      const timeStr = timestamp.toLocaleTimeString();
+      const dateStr = timestamp.toLocaleDateString();
+      const preview = text.length > 100 ? text.substring(0, 100) + '...' : text;
+
+      item.innerHTML = `
+        <div class="history-item-content">${escapeHtml(preview)}</div>
+        <div class="history-item-meta">
+          <span>${sourceDeviceId}</span>
+          <span>${dateStr} ${timeStr}</span>
+          <span>${text.length} chars</span>
+        </div>
+      `;
+
+      historyList.insertBefore(item, historyList.firstChild);
+
+      // Limit history to 50 items
+      while (historyList.children.length > 50) {
+        historyList.removeChild(historyList.lastChild!);
+      }
+    }
+
+    /** Update paired devices list */
+    function updatePairedDevices(deviceId: string, online: boolean) {
+      const existing = pairedDevices.get(deviceId);
+      if (online) {
+        pairedDevices.set(deviceId, { name: existing?.name ?? 'Unknown Device', online: true });
+      } else if (existing) {
+        existing.online = false;
+        pairedDevices.set(deviceId, existing);
+      }
+      renderPairedDevices();
+    }
+
+    /** Render paired devices */
+    function renderPairedDevices() {
+      const hasDevices = pairedDevices.size > 0;
+      if (!hasDevices) {
+        pairedDevicesList.innerHTML = '<div class="clipboard-empty">No paired devices online</div>';
+        return;
+      }
+
+      pairedDevicesList.innerHTML = '';
+      for (const [deviceId, info] of pairedDevices) {
+        const deviceEl = document.createElement('div');
+        deviceEl.className = 'paired-device';
+        deviceEl.innerHTML = `
+          <div class="paired-device-info">
+            <span class="paired-device-name">${escapeHtml(info.name)}</span>
+            <span class="paired-device-id">${escapeHtml(deviceId.substring(0, 8))}...</span>
+          </div>
+          <div class="paired-device-status">
+            <span class="device-status-dot ${info.online ? 'online' : 'offline'}"></span>
+            <span>${info.online ? 'Online' : 'Offline'}</span>
+          </div>
+        `;
+        pairedDevicesList.appendChild(deviceEl);
+      }
+    }
+
+    /** Copy text to clipboard */
+    async function copyToClipboard(text: string) {
       try {
-        const result = await window.api.ping();
-        status.textContent = `✓ Preload working: ${result}`;
-        status.style.color = '#4ade80';
+        await navigator.clipboard.writeText(text);
+        const btn = event?.target as HTMLButtonElement;
+        if (btn) {
+          const originalText = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => btn.textContent = originalText, 1500);
+        }
       } catch (e) {
-        status.textContent = `✗ Preload error: ${e}`;
-        status.style.color = '#f87171';
+        console.error('Failed to copy:', e);
+      }
+    }
+
+    /** Escape HTML for safe rendering */
+    function escapeHtml(text: string): string {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', async () => {
+      try {
+        // Get initial device state
+        const deviceState = await window.api.getDeviceState();
+        updateDeviceUI(deviceState);
+
+        // Get initial clipboard sync state
+        const syncState = await window.api.getClipboardSyncState();
+        updateSyncUI(syncState);
+
+        // Subscribe to device state changes
+        const unsubscribeDevice = window.api.onDeviceStateChange(updateDeviceUI);
+
+        // Subscribe to clipboard sync state changes
+        const unsubscribeSync = window.api.onClipboardSyncStateChange(updateSyncUI);
+
+        // Subscribe to clipboard received
+        const unsubscribeReceived = window.api.onClipboardReceived(updateClipboardPreview);
+
+        // Subscribe to paired device events
+        const unsubscribeOnline = window.api.onPairedDeviceOnline((deviceId) => updatePairedDevices(deviceId, true));
+        const unsubscribeOffline = window.api.onPairedDeviceOffline((deviceId) => updatePairedDevices(deviceId, false));
+
+        // Button handlers
+        syncHistoryBtn.addEventListener('click', async () => {
+          syncHistoryBtn.disabled = true;
+          syncHistoryBtn.textContent = 'Syncing...';
+          try {
+            await window.api.requestHistorySync(50);
+          } catch (e) {
+            console.error('History sync failed:', e);
+          } finally {
+            syncHistoryBtn.disabled = false;
+            syncHistoryBtn.textContent = 'Request History Sync';
+          }
+        });
+
+        copyLatestBtn.addEventListener('click', () => {
+          if (latestClipboardText) {
+            copyToClipboard(latestClipboardText);
+          }
+        });
+
+        // Cleanup on unload
+        window.addEventListener('beforeunload', () => {
+          unsubscribeDevice();
+          unsubscribeSync();
+          unsubscribeReceived();
+          unsubscribeOnline();
+          unsubscribeOffline();
+        });
+      } catch (e) {
+        console.error('Failed to initialize:', e);
+        deviceStatusBadge.className = 'status-badge error';
+        deviceStatusText.textContent = 'Initialization Error';
+        deviceErrorMessage.classList.remove('hidden');
+        deviceErrorMessage.textContent = 'Failed to connect to main process: ' + (e instanceof Error ? e.message : String(e));
       }
     });
   </script>

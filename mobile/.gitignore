@@ -5,9 +5,12 @@
 *.swp
 .DS_Store
 .atom/
+.build/
 .buildlog/
 .history
-*.iml
+.svn/
+.swiftpm/
+migrate_working_dir/
 
 # IntelliJ related
 *.iml
@@ -24,124 +27,19 @@
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
-.flutter-plugins
 .flutter-plugins-dependencies
-.packages
 .pub-cache/
 .pub/
 /build/
+/coverage/
 
-# Android related
-**/android/**/gradle-wrapper.jar
-**/android/.gradle
-**/android/captures/
-**/android/gradlew
-**/android/gradlew.bat
-**/android/local.properties
-**/android/**/*.keystore
-**/android/**/*.jks
-**/android/**/*.iml
-**/android/*.iml
-**/android/build/
+# Symbolication related
+app.*.symbols
 
-# iOS/XCode related
-**/ios/**/*.mode1v3
-**/ios/**/*.mode2v3
-**/ios/**/*.moved-aside
-**/ios/**/*.pbxuser
-**/ios/**/*.perspectivev3
-**/ios/**/*.xcuserstate
-**/ios/**/*.xcworkspace
-**/ios/**/xcuserdata/
-**/ios/**/.generated/
-**/ios/Flutter/ephemeral/
-**/ios/Flutter/Flutter.podspec
-**/ios/Flutter/Generated.xcconfig
-**/ios/Flutter/app.flx
-**/ios/Flutter/app.zip
-**/ios/Flutter/flutter_assets/
-**/ios/ServiceDefinitions.json
-**/ios/Runner/GeneratedPluginRegistrant.*
+# Obfuscation related
+app.*.map.json
 
-# Exceptions to above rules.
-!**/ios/**/default.mode1v3
-!**/ios/**/default.mode2v3
-!**/ios/**/default.pbxuser
-!**/ios/**/default.perspectivev3
-!**/ios/Runner.xcworkspace/contents.xcworkspacedata
-!**/ios/.gitignore
-!**/ios/Runner/**/Info.plist
-!**/ios/Runner/**/*.entitlements
-!**/ios/Runner.xcworkspace/**/contents.xcworkspacedata
-
-# macOS
-**/.DS_Store
-**/AppIcon.appiconset/Contents.json
-
-# Linux
-**/linux/ephemeral/
-**/linux/flutter/ephemeral/
-**/linux/CMakeFiles/
-**/linux/**/CMakeCache.txt
-**/linux/**/*.cmake
-**/linux/**/Makefile
-**/linux/**/cmake_install.cmake
-**/linux/**/compile_commands.json
-**/linux/**/*.a
-**/linux/**/*.so
-**/linux/build/
-
-# Windows
-**/windows/ephemeral/
-**/windows/flutter/ephemeral/
-**/windows/CMakeFiles/
-**/windows/**/CMakeCache.txt
-**/windows/**/*.cmake
-**/windows/**/Makefile
-**/windows/**/cmake_install.cmake
-**/windows/**/compile_commands.json
-**/windows/**/*.obj
-**/windows/**/*.exe
-**/windows/**/*.dll
-**/windows/**/*.lib
-**/windows/build/
-
-# Web
-**/web/.dart_tool/
-**/web/build/
-**/web/.flutter-plugins
-**/web/.flutter-plugins-dependencies
-**/web/.packages
-**/web/pubspec.lock
-**/web/*.iml
-
-# Coverage
-**/coverage/
-**/lcov.info
-
-# App links
-**/android/app/src/main/assets/asset_manifest.json
-**/android/app/src/main/assets/FontManifest.json
-
-# Obfuscation
-**/build/app/outputs/map/
-
-# Local properties
-**/android/local.properties
-**/android/gradle.properties
-**/android/gradle-local.properties
-
-# Fastlane
-**/android/fastlane/
-**/ios/fastlane/
-
-# Built application files
-*.apk
-*.aab
-*.ipa
-*.dmg
-*.app
-
-# Additional generated files
-**/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
-**/ios/Flutter/flutter_export_environment.sh
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
