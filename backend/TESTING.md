@@ -1,4 +1,5 @@
 # Testing Synk Backend
+
 ## Prerequisites
 
 The tests require a PostgreSQL database. You have two options:
