@@ -1,7 +1,6 @@
 name: synk_mobile
 description: "Synk mobile client - cross-device clipboard synchronization"
 publish_to: 'none'
-
 version: 1.0.0+1
 
 environment:
