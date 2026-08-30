@@ -11,6 +11,7 @@ All WebSocket messages use JSON.
 ## Message Format
 
 Every message should contain:
+
 ```json
 {
   "type": "message_type",
