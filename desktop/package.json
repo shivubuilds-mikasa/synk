@@ -1,5 +1,6 @@
 {
   "name": "desktop",
+  
   "version": "1.0.0",
   "description": "Synk Desktop - Electron + TypeScript",
   "main": "dist/main/main.js",
