@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
+
 import { deviceService, AuthState, DeviceState } from './services/device-service';
 import { secureStorage } from './services/secure-storage';
 import { config } from './config';
