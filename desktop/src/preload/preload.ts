@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 
 /** Device info for renderer (no auth token). */
 interface DeviceInfo {
+  
   deviceId: string;
   deviceName: string;
   deviceType: 'mobile' | 'desktop';
