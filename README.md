@@ -4,8 +4,6 @@ seamlessly between them.
 
 The first milestone: **reliable two-way text clipboard synchronization.**
 
-
-
 ```
 Phone                          Laptop
  Copy → "Hello from my phone"
