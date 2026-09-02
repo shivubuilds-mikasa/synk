@@ -1,5 +1,4 @@
 # Synk Architecture
-
 ## Overview
 
 Synk is a cross-device ecosystem connecting a mobile device and laptop.
