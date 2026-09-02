@@ -1,6 +1,7 @@
 """Pytest configuration for Synk backend tests."""
 
 import os
+hfhyftgfdtg
 from typing import AsyncGenerator
 
 import pytest
