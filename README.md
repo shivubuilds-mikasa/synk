@@ -3,7 +3,6 @@
 your phone and laptop, letting information move
 seamlessly between them.
 
-
 The first milestone: **reliable two-way text clipboard synchronization.**
 
 ```
