@@ -18,7 +18,7 @@ class AppConfig {
   /// - Production: 'https://api.synk.example.com'
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://10.0.2.2:8000',
+    defaultValue: 'https://synk-api-vb4q.onrender.com',
   );
 
   /// API version path prefix.

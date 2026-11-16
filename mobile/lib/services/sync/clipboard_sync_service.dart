@@ -104,6 +104,11 @@ class ClipboardSyncService {
       wsUrl: '${_buildWsUrl()}$deviceId',
       deviceId: deviceId,
       authToken: authToken,
+      config: WebSocketClientConfig(
+        connectionTimeoutMs: AppConfig.apiBaseUrl.contains('onrender.com')
+            ? 65000
+            : 10000,
+      ),
     );
 
     // Set up WebSocket listeners

@@ -657,7 +657,14 @@
             pairingCodeInput.value = '';
             await refreshPairedDevices();
           } catch (error) {
-            showPairingError(error instanceof Error ? error.message : String(error));
+            const message = error instanceof Error ? error.message : String(error);
+            if (message.toLowerCase().includes('already paired')) {
+              pairingCodeInput.value = '';
+              await refreshPairedDevices();
+              showPairingError('These devices are already paired. Device list refreshed.');
+            } else {
+              showPairingError(message);
+            }
           } finally {
             confirmPairingBtn.disabled = false;
           }

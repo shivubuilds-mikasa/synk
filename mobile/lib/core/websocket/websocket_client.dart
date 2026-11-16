@@ -78,6 +78,7 @@ typedef ErrorCallback = void Function(Object error, StackTrace stackTrace);
 class SynkWebSocketClient {
   final String _wsUrl;
   final String _deviceId;
+  final String authToken;
   final WebSocketClientConfig _config;
 
   WebSocketChannel? _channel;
@@ -105,9 +106,9 @@ class SynkWebSocketClient {
   SynkWebSocketClient({
     required this._wsUrl,
     required this._deviceId,
-    required String authToken, // unused but kept for API compatibility
+    required this.authToken,
     WebSocketClientConfig? config,
-  })  : _config = config ?? const WebSocketClientConfig();
+  }) : _config = config ?? const WebSocketClientConfig();
 
   /// Current connection state.
   WebSocketConnectionState get state => _state;
@@ -144,6 +145,13 @@ class SynkWebSocketClient {
     try {
       final uri = Uri.parse(_wsUrl);
       _channel = WebSocketChannel.connect(uri);
+
+      // The backend requires the first WebSocket frame to authenticate this
+      // device. WebSocketChannel buffers this frame until its handshake ends.
+      _channel!.sink.add(jsonEncode({
+        'type': 'auth',
+        'token': authToken,
+      }));
 
       // Set up connection timeout
       _connectionTimeoutTimer = Timer(

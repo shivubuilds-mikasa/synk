@@ -3,9 +3,9 @@
   <h1>Synk</h1>
   <p><strong>Your text, wherever you need it.</strong><br />Pair your phone and desktop once, then keep text moving between them.</p>
   <p>
-    <a href="https://github.com/shivubuilds-mikasa/synk/releases/download/v1.0.2/Synk-Setup-1.0.2.exe">Download Windows</a>
+    <a href="https://github.com/shivubuilds-mikasa/synk/releases/download/v1.0.3/Synk-Setup-1.0.3.exe">Download Windows</a>
     ·
-    <a href="https://github.com/shivubuilds-mikasa/synk/releases/download/v1.0.1/app-release.apk">Download Android</a>
+    <a href="https://github.com/shivubuilds-mikasa/synk/releases/download/v1.0.2/app-release.apk">Download Android</a>
     ·
     <a href="https://synk-api-vb4q.onrender.com/health">API health</a>
   </p>
@@ -15,15 +15,15 @@ Synk is a text-only clipboard sync app with Flutter mobile and Electron desktop 
 
 ## Try Synk
 
-1. Install the [Windows desktop app](https://github.com/shivubuilds-mikasa/synk/releases/download/v1.0.2/Synk-Setup-1.0.2.exe).
-2. Install the [Android APK](https://github.com/shivubuilds-mikasa/synk/releases/download/v1.0.1/app-release.apk).
+1. Install the [Windows desktop app](https://github.com/shivubuilds-mikasa/synk/releases/download/v1.0.3/Synk-Setup-1.0.3.exe).
+2. Install the [Android APK](https://github.com/shivubuilds-mikasa/synk/releases/download/v1.0.2/app-release.apk).
 3. Open both apps. Register the phone with a name; desktop registration happens automatically.
 4. On either device, create a pairing code. Enter that code on the other device.
 5. Copy text on one device and confirm it appears in Synk on the other.
 
 The hosted test backend is on Render’s free tier. It can take up to about 50 seconds to wake after inactivity, so the first connection may be slow. Its free PostgreSQL database expires after 30 days; this deployment is for testing, not long-term storage. See [Render’s free-tier limits](https://render.com/docs/free).
 
-The Windows installer is unsigned, so Windows may show a SmartScreen warning. If an earlier desktop build is already installed, the updated app checks its saved credentials against the hosted backend and replaces credentials that belong to another backend. Pair the desktop with your phone again after updating.
+The Windows installer is unsigned, so Windows may show a SmartScreen warning. The phone build now authenticates its WebSocket connection and defaults to the hosted test backend. The desktop repairs saved credentials if they belong to another backend. Existing device pairings remain in place after updating.
 
 ## What it does
 

@@ -79,7 +79,13 @@ class _PairingScreenState extends State<PairingScreen> {
         'Enter the six-digit code from the other device.',
       );
     }
-    await _pairingService!.confirmCode(code);
+    try {
+      await _pairingService!.confirmCode(code);
+      _error = 'Devices paired successfully.';
+    } catch (error) {
+      if (!error.toString().toLowerCase().contains('already paired')) rethrow;
+      _error = 'These devices are already paired. Device list refreshed.';
+    }
     _codeController.clear();
     await _refreshDevices();
   });

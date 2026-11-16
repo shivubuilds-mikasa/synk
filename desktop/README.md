@@ -20,7 +20,7 @@ npm ci
 npm run package:win
 ```
 
-The installer is written to `release/Synk-Setup-1.0.2.exe`. To produce an unpacked app folder instead, use `npm run package:dir`.
+The installer is written to `release/Synk-Setup-1.0.3.exe`. To produce an unpacked app folder instead, use `npm run package:dir`.
 
 ## Pair and test clipboard sync
 
