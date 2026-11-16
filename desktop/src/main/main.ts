@@ -5,6 +5,7 @@ import { secureStorage } from './services/secure-storage';
 import { config } from './config';
 import { ClipboardSyncService, ClipboardSyncState } from './services/clipboard-sync-service';
 import { ClipboardService } from './services/clipboard-service';
+import { pairingService } from './services/pairing-service';
 
 let mainWindow: BrowserWindow | null = null;
 let clipboardSyncService: ClipboardSyncService | null = null;
@@ -183,6 +184,12 @@ function setupIpcHandlers(): void {
   ipcMain.handle('clipboard-sync:request-history', async (_, limit?: number) => {
     await clipboardSyncService?.requestHistorySync(limit ?? 50);
   });
+
+  ipcMain.handle('pairing:create-code', () => pairingService.createCode());
+  ipcMain.handle('pairing:confirm-code', (_, code: string) =>
+    pairingService.confirmCode(code),
+  );
+  ipcMain.handle('pairing:list', () => pairingService.getPairedDevices());
 
 }
 

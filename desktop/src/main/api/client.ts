@@ -140,6 +140,16 @@ export class SynkApiClient {
     this.client = new HttpClient(baseUrl ?? cfg.backendUrl, timeoutMs ?? cfg.requestTimeoutMs);
   }
 
+  /** Perform an authenticated GET request against the API. */
+  async get<T>(path: string, authToken: string): Promise<ApiResult<T>> {
+    return this.client.get<T>(path, authToken);
+  }
+
+  /** Perform an authenticated POST request against the API. */
+  async post<T>(path: string, body: unknown, authToken: string): Promise<ApiResult<T>> {
+    return this.client.post<T>(path, body, authToken);
+  }
+
   /**
    * Register a new device.
    * Returns device credentials including the auth_token (only returned once).

@@ -5,10 +5,12 @@
   "main": "dist/main/main.js",
   "scripts": {
     "dev": "npm run build && electron .",
-    "build": "tsc",
+    "build": "tsc && node scripts/build-renderer.js",
+    "package:win": "npm run build && electron-builder --win nsis --x64",
+    "package:dir": "npm run build && electron-builder --dir --win --x64",
     "start": "electron .",
     "watch": "tsc -w",
-    "clean": "rm -rf dist",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true});require('fs').rmSync('release',{recursive:true,force:true})\"",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
@@ -20,6 +22,7 @@
     "@types/node": "^22.0.0",
     "@types/ws": "^8.5.0",
     "electron": "^32.0.0",
+    "electron-builder": "^26.18.0",
     "typescript": "^5.5.0",
     "vitest": "^2.1.9"
   },
@@ -28,6 +31,32 @@
     "ws": "^8.18.0"
   },
   "allowScripts": {
-    "keytar@7.9.0": true
+    "keytar@7.9.0": true,
+    "electron@32.3.3": true,
+    "esbuild@0.21.5": true
+  },
+  "build": {
+    "appId": "com.synk.desktop",
+    "productName": "Synk",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }

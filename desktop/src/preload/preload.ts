@@ -14,6 +14,23 @@ interface DeviceState {
   error: string | null;
 }
 
+interface PairingCode {
+  code: string;
+  expires_at: string;
+  device_id: string;
+}
+
+interface PairedDevice {
+  device_id: string;
+  device_name: string;
+  device_type: 'mobile' | 'desktop';
+}
+
+interface PairedDevicesResponse {
+  device_id: string;
+  paired_devices: PairedDevice[];
+}
+
 /** Clipboard sync state. */
 type ClipboardSyncState = 'disconnected' | 'connecting' | 'connected' | 'reconnecting' | 'error';
 
@@ -44,6 +61,18 @@ contextBridge.exposeInMainWorld('api', {
   /** Request history sync from server. */
   requestHistorySync: (limit?: number): Promise<void> =>
     ipcRenderer.invoke('clipboard-sync:request-history', limit),
+
+  /** Create a pairing code for this device. */
+  createPairingCode: (): Promise<PairingCode> =>
+    ipcRenderer.invoke('pairing:create-code'),
+
+  /** Confirm a pairing code from another device. */
+  confirmPairingCode: (code: string): Promise<{ paired_device: PairedDevice }> =>
+    ipcRenderer.invoke('pairing:confirm-code', code),
+
+  /** Get this device's paired devices. */
+  getPairedDevices: (): Promise<PairedDevicesResponse> =>
+    ipcRenderer.invoke('pairing:list'),
 
   /** Subscribe to clipboard sync state changes. */
   onClipboardSyncStateChange: (callback: (state: ClipboardSyncState) => void) => {
