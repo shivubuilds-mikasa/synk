@@ -122,6 +122,10 @@ class ClipboardSyncService {
     // Read initial clipboard value
     await _clipboardService.read();
 
+    // Start polling after establishing the baseline. Without this, the mobile
+    // app receives remote clipboard updates but never detects local copies.
+    _clipboardService.startPolling();
+
     // Connect to WebSocket
     await _webSocketClientInstance!.connect();
   }
