@@ -27,7 +27,9 @@ function createWindow(): void {
 
   // Always load local file since we don't use Vite dev server
   mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
-  mainWindow.webContents.openDevTools();
+  if (!app.isPackaged) {
+    mainWindow.webContents.openDevTools();
+  }
 
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -182,12 +184,6 @@ function setupIpcHandlers(): void {
     await clipboardSyncService?.requestHistorySync(limit ?? 50);
   });
 
-  // Send clipboard update (for manual sync from UI)
-  ipcMain.handle('clipboard-sync:send-update', async (_, text: string) => {
-    // This would require a new method in ClipboardSyncService
-    // For now, we rely on polling
-    return false;
-  });
 }
 
 app.whenReady().then(async () => {

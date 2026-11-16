@@ -1,17 +1,25 @@
-# synk_mobile
+# Synk Mobile
 
-A new Flutter project.
+Flutter client for device registration, pairing, and text clipboard sync.
 
-## Getting Started
+## Run
 
-This project is a starting point for a Flutter application.
+Install Flutter dependencies and start the app with a backend URL reachable from the device:
 
-A few resources to get you started if this is your first Flutter project:
+```powershell
+flutter pub get
+dart run build_runner build
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000
+```
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+Use `http://localhost:8000` for an iOS simulator. For a physical device, use the development computer's LAN address. The default Android emulator URL is `10.0.2.2`.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Before analysis or tests, regenerate model code after editing Freezed models:
+
+```powershell
+dart run build_runner build
+flutter analyze
+flutter test
+```
+
+Device credentials are stored using `flutter_secure_storage`. Clipboard sync requires registration and at least one paired device; mobile clipboard monitoring is subject to platform lifecycle restrictions.

@@ -6,6 +6,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:synk_mobile/models/device.dart';
+import 'package:synk_mobile/features/clipboard/clipboard_sync_screen.dart';
 
 /// Screen to display device information after registration.
 class DeviceInfoScreen extends StatelessWidget {
@@ -49,16 +50,16 @@ class DeviceInfoScreen extends StatelessWidget {
                 'Registration Successful!',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Your device has been registered with Synk.',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 32),
 
@@ -72,9 +73,8 @@ class DeviceInfoScreen extends StatelessWidget {
                     children: [
                       Text(
                         'Device Information',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 16),
                       _InfoRow(
@@ -93,10 +93,8 @@ class DeviceInfoScreen extends StatelessWidget {
                         label: 'Device ID',
                         value: device.deviceId,
                         icon: Icons.fingerprint,
-                        valueStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              fontFamily: 'monospace',
-                              fontSize: 11,
-                            ),
+                        valueStyle: Theme.of(context).textTheme.bodySmall
+                            ?.copyWith(fontFamily: 'monospace', fontSize: 11),
                       ),
                     ],
                   ),
@@ -114,14 +112,18 @@ class DeviceInfoScreen extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.security,
-                        color: Theme.of(context).colorScheme.onSecondaryContainer,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSecondaryContainer,
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           'Your authentication token has been securely stored.',
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSecondaryContainer,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSecondaryContainer,
                           ),
                         ),
                       ),
@@ -133,18 +135,15 @@ class DeviceInfoScreen extends StatelessWidget {
 
               // Continue button
               FilledButton(
-                onPressed: () {
-                  // For now, just show a placeholder
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Clipboard sync coming soon!'),
-                    ),
-                  );
-                },
+                onPressed: () => Navigator.of(context).pushReplacement(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const ClipboardSyncScreen(),
+                  ),
+                ),
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                child: const Text('Continue'),
+                child: const Text('Start syncing'),
               ),
             ],
           ),
@@ -172,11 +171,7 @@ class _InfoRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(
-          icon,
-          size: 20,
-          color: Theme.of(context).colorScheme.primary,
-        ),
+        Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
         const SizedBox(width: 12),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,8 +179,8 @@ class _InfoRow extends StatelessWidget {
             Text(
               label,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 2),
             SelectableText(

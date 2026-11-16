@@ -84,11 +84,12 @@ The test fixtures automatically:
 ## Test Structure
 
 - `tests/conftest.py` - Pytest fixtures and configuration
-- `tests/test_devices.py` - Device registration and retrieval tests (20 tests)
-- `tests/test_pairing.py` - Device pairing tests (32 tests)
-- `tests/test_websocket.py` - WebSocket tests (13 tests)
+- `tests/test_devices.py` - Device registration and retrieval
+- `tests/test_pairing.py` - Device pairing
+- `tests/test_clipboard.py` and `tests/test_clipboard_sync.py` - Clipboard history and sync
+- `tests/test_websocket.py` - WebSocket authentication and messaging
 
-Total: 65 tests
+Run the suite to see the current test count; it changes as coverage grows.
 
 ## Troubleshooting
 

@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:synk_mobile/services/clipboard/clipboard_service.dart';
 import 'package:synk_mobile/services/sync/clipboard_sync_service.dart';
 import 'package:synk_mobile/services/device_service.dart';
+import 'package:synk_mobile/features/device/pairing_screen.dart';
 
 /// Screen showing clipboard synchronization status and controls.
 class ClipboardSyncScreen extends StatefulWidget {
@@ -95,9 +96,9 @@ class _ClipboardSyncScreenState extends State<ClipboardSyncScreen> {
     if (_latestClipboardText != null && _latestClipboardText!.isNotEmpty) {
       await Clipboard.setData(ClipboardData(text: _latestClipboardText!));
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Copied to clipboard')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
       }
     }
   }
@@ -113,7 +114,8 @@ class _ClipboardSyncScreenState extends State<ClipboardSyncScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final syncState = _syncService?.syncState ?? ClipboardSyncState.disconnected;
+    final syncState =
+        _syncService?.syncState ?? ClipboardSyncState.disconnected;
     final isConnected = _syncService?.isSyncing ?? false;
 
     return Scaffold(
@@ -121,6 +123,13 @@ class _ClipboardSyncScreenState extends State<ClipboardSyncScreen> {
         title: const Text('Clipboard Sync'),
         centerTitle: true,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.devices),
+            tooltip: 'Manage paired devices',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const PairingScreen()),
+            ),
+          ),
           if (isConnected)
             IconButton(
               icon: const Icon(Icons.sync),
@@ -141,10 +150,6 @@ class _ClipboardSyncScreenState extends State<ClipboardSyncScreen> {
                 isConnected: isConnected,
                 lastError: _lastError,
               ),
-              const SizedBox(height: 16),
-
-              // Paired Devices Status
-              _PairedDevicesCard(),
               const SizedBox(height: 16),
 
               // Latest Clipboard Item
@@ -219,17 +224,13 @@ class _ConnectionStatusCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  statusIcon,
-                  color: statusColor,
-                  size: 28,
-                ),
+                Icon(statusIcon, color: statusColor, size: 28),
                 const SizedBox(width: 12),
                 Text(
                   'Synk Connection',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const Spacer(),
                 Container(
@@ -246,9 +247,9 @@ class _ConnectionStatusCard extends StatelessWidget {
             Text(
               statusText,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: statusColor,
-                    fontWeight: FontWeight.w500,
-                  ),
+                color: statusColor,
+                fontWeight: FontWeight.w500,
+              ),
             ),
             if (lastError != null) ...[
               const SizedBox(height: 8),
@@ -279,64 +280,6 @@ class _ConnectionStatusCard extends StatelessWidget {
                 ),
               ),
             ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Card showing paired devices status.
-class _PairedDevicesCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.devices,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 28,
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  'Paired Devices',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Device pairing UI coming soon',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(
-                  Icons.info_outline,
-                  size: 16,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Use the backend API to pair devices',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                ),
-              ],
-            ),
           ],
         ),
       ),
@@ -380,8 +323,8 @@ class _LatestClipboardCard extends StatelessWidget {
                 Text(
                   'Latest Clipboard',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const Spacer(),
                 if (hasContent && isConnected)
@@ -390,7 +333,10 @@ class _LatestClipboardCard extends StatelessWidget {
                     icon: const Icon(Icons.copy, size: 18),
                     label: const Text('Copy'),
                     style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                     ),
                   ),
               ],
@@ -401,9 +347,9 @@ class _LatestClipboardCard extends StatelessWidget {
                 Text(
                   source!,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 const SizedBox(height: 8),
               ],
@@ -419,9 +365,9 @@ class _LatestClipboardCard extends StatelessWidget {
                 ),
                 child: SelectableText(
                   text!,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontFamily: 'monospace',
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyLarge?.copyWith(fontFamily: 'monospace'),
                 ),
               ),
             ] else ...[
@@ -432,23 +378,25 @@ class _LatestClipboardCard extends StatelessWidget {
                     Icon(
                       Icons.content_copy,
                       size: 48,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                     ),
                     const SizedBox(height: 12),
                     Text(
                       'No clipboard content synced yet',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Copy text on this device or a paired device to see it here',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
