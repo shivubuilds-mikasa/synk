@@ -68,7 +68,11 @@ class _ClipboardSyncScreenState extends State<ClipboardSyncScreen> {
   }
 
   void _onStateChange(ClipboardSyncState state) {
-    if (mounted) setState(() {});
+    if (mounted) {
+      setState(() {
+        if (state == ClipboardSyncState.connected) _lastError = null;
+      });
+    }
   }
 
   void _onClipboardReceived(String text) {
@@ -76,6 +80,7 @@ class _ClipboardSyncScreenState extends State<ClipboardSyncScreen> {
       setState(() {
         _latestClipboardText = text;
         _lastSyncedSource = 'Synced from paired device';
+        _lastError = null;
       });
     }
   }
