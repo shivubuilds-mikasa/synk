@@ -9,14 +9,14 @@ part of 'sync_message.dart';
 _ClipboardPayload _$ClipboardPayloadFromJson(Map<String, dynamic> json) =>
     _ClipboardPayload(
       contentType:
-          $enumDecodeNullable(_$ContentTypeEnumMap, json['contentType']) ??
+          $enumDecodeNullable(_$ContentTypeEnumMap, json['content_type']) ??
           ContentType.text,
       text: json['text'] as String,
     );
 
 Map<String, dynamic> _$ClipboardPayloadToJson(_ClipboardPayload instance) =>
     <String, dynamic>{
-      'contentType': _$ContentTypeEnumMap[instance.contentType]!,
+      'content_type': _$ContentTypeEnumMap[instance.contentType]!,
       'text': instance.text,
     };
 
@@ -26,8 +26,8 @@ _SyncMessageBase _$SyncMessageBaseFromJson(Map<String, dynamic> json) =>
     _SyncMessageBase(
       type: $enumDecode(_$SyncMessageTypeEnumMap, json['type']),
       version: (json['version'] as num?)?.toInt() ?? 1,
-      messageId: json['messageId'] as String,
-      deviceId: json['deviceId'] as String,
+      messageId: json['message_id'] as String,
+      deviceId: json['device_id'] as String,
       timestamp: json['timestamp'] as String,
     );
 
@@ -35,25 +35,26 @@ Map<String, dynamic> _$SyncMessageBaseToJson(_SyncMessageBase instance) =>
     <String, dynamic>{
       'type': _$SyncMessageTypeEnumMap[instance.type]!,
       'version': instance.version,
-      'messageId': instance.messageId,
-      'deviceId': instance.deviceId,
+      'message_id': instance.messageId,
+      'device_id': instance.deviceId,
       'timestamp': instance.timestamp,
     };
 
 const _$SyncMessageTypeEnumMap = {
-  SyncMessageType.clipboardUpdate: 'clipboardUpdate',
+  SyncMessageType.auth: 'auth',
+  SyncMessageType.clipboardUpdate: 'clipboard.update',
   SyncMessageType.ping: 'ping',
-  SyncMessageType.deliveryReceipt: 'deliveryReceipt',
-  SyncMessageType.historySyncRequest: 'historySyncRequest',
-  SyncMessageType.clipboardUpdateReceived: 'clipboardUpdateReceived',
-  SyncMessageType.clipboardUpdateRelay: 'clipboardUpdateRelay',
+  SyncMessageType.deliveryReceipt: 'delivery.receipt',
+  SyncMessageType.historySyncRequest: 'history.sync.request',
+  SyncMessageType.clipboardUpdateReceived: 'clipboard.update.received',
+  SyncMessageType.clipboardUpdateRelay: 'clipboard.update.relay',
   SyncMessageType.pong: 'pong',
   SyncMessageType.error: 'error',
   SyncMessageType.ack: 'ack',
-  SyncMessageType.historySyncResponse: 'historySyncResponse',
-  SyncMessageType.deviceOnline: 'deviceOnline',
-  SyncMessageType.deviceOffline: 'deviceOffline',
-  SyncMessageType.authSuccess: 'authSuccess',
+  SyncMessageType.historySyncResponse: 'history.sync.response',
+  SyncMessageType.deviceOnline: 'device.online',
+  SyncMessageType.deviceOffline: 'device.offline',
+  SyncMessageType.authSuccess: 'auth.success',
 };
 
 _ClipboardUpdateMessage _$ClipboardUpdateMessageFromJson(
@@ -61,8 +62,8 @@ _ClipboardUpdateMessage _$ClipboardUpdateMessageFromJson(
 ) => _ClipboardUpdateMessage(
   type: $enumDecode(_$SyncMessageTypeEnumMap, json['type']),
   version: (json['version'] as num?)?.toInt() ?? 1,
-  messageId: json['messageId'] as String,
-  deviceId: json['deviceId'] as String,
+  messageId: json['message_id'] as String,
+  deviceId: json['device_id'] as String,
   timestamp: json['timestamp'] as String,
   payload: ClipboardPayload.fromJson(json['payload'] as Map<String, dynamic>),
 );
@@ -72,17 +73,17 @@ Map<String, dynamic> _$ClipboardUpdateMessageToJson(
 ) => <String, dynamic>{
   'type': _$SyncMessageTypeEnumMap[instance.type]!,
   'version': instance.version,
-  'messageId': instance.messageId,
-  'deviceId': instance.deviceId,
+  'message_id': instance.messageId,
+  'device_id': instance.deviceId,
   'timestamp': instance.timestamp,
-  'payload': instance.payload,
+  'payload': instance.payload.toJson(),
 };
 
 _PingMessage _$PingMessageFromJson(Map<String, dynamic> json) => _PingMessage(
   type: $enumDecode(_$SyncMessageTypeEnumMap, json['type']),
   version: (json['version'] as num?)?.toInt() ?? 1,
-  messageId: json['messageId'] as String,
-  deviceId: json['deviceId'] as String,
+  messageId: json['message_id'] as String,
+  deviceId: json['device_id'] as String,
   timestamp: json['timestamp'] as String,
   payload: json['payload'] as Map<String, dynamic>?,
 );
@@ -91,8 +92,8 @@ Map<String, dynamic> _$PingMessageToJson(_PingMessage instance) =>
     <String, dynamic>{
       'type': _$SyncMessageTypeEnumMap[instance.type]!,
       'version': instance.version,
-      'messageId': instance.messageId,
-      'deviceId': instance.deviceId,
+      'message_id': instance.messageId,
+      'device_id': instance.deviceId,
       'timestamp': instance.timestamp,
       'payload': instance.payload,
     };
@@ -102,8 +103,8 @@ _DeliveryReceiptMessage _$DeliveryReceiptMessageFromJson(
 ) => _DeliveryReceiptMessage(
   type: $enumDecode(_$SyncMessageTypeEnumMap, json['type']),
   version: (json['version'] as num?)?.toInt() ?? 1,
-  messageId: json['messageId'] as String,
-  deviceId: json['deviceId'] as String,
+  messageId: json['message_id'] as String,
+  deviceId: json['device_id'] as String,
   timestamp: json['timestamp'] as String,
   payload: json['payload'] as Map<String, dynamic>,
 );
@@ -113,8 +114,8 @@ Map<String, dynamic> _$DeliveryReceiptMessageToJson(
 ) => <String, dynamic>{
   'type': _$SyncMessageTypeEnumMap[instance.type]!,
   'version': instance.version,
-  'messageId': instance.messageId,
-  'deviceId': instance.deviceId,
+  'message_id': instance.messageId,
+  'device_id': instance.deviceId,
   'timestamp': instance.timestamp,
   'payload': instance.payload,
 };
@@ -124,8 +125,8 @@ _HistorySyncRequestMessage _$HistorySyncRequestMessageFromJson(
 ) => _HistorySyncRequestMessage(
   type: $enumDecode(_$SyncMessageTypeEnumMap, json['type']),
   version: (json['version'] as num?)?.toInt() ?? 1,
-  messageId: json['messageId'] as String,
-  deviceId: json['deviceId'] as String,
+  messageId: json['message_id'] as String,
+  deviceId: json['device_id'] as String,
   timestamp: json['timestamp'] as String,
   payload: json['payload'] as Map<String, dynamic>,
 );
@@ -135,8 +136,8 @@ Map<String, dynamic> _$HistorySyncRequestMessageToJson(
 ) => <String, dynamic>{
   'type': _$SyncMessageTypeEnumMap[instance.type]!,
   'version': instance.version,
-  'messageId': instance.messageId,
-  'deviceId': instance.deviceId,
+  'message_id': instance.messageId,
+  'device_id': instance.deviceId,
   'timestamp': instance.timestamp,
   'payload': instance.payload,
 };
@@ -146,8 +147,8 @@ _ClipboardUpdateReceivedMessage _$ClipboardUpdateReceivedMessageFromJson(
 ) => _ClipboardUpdateReceivedMessage(
   type: $enumDecode(_$SyncMessageTypeEnumMap, json['type']),
   version: (json['version'] as num?)?.toInt() ?? 1,
-  messageId: json['messageId'] as String,
-  deviceId: json['deviceId'] as String,
+  messageId: json['message_id'] as String,
+  deviceId: json['device_id'] as String,
   timestamp: json['timestamp'] as String,
   payload: json['payload'] as Map<String, dynamic>? ?? const {},
 );
@@ -157,8 +158,8 @@ Map<String, dynamic> _$ClipboardUpdateReceivedMessageToJson(
 ) => <String, dynamic>{
   'type': _$SyncMessageTypeEnumMap[instance.type]!,
   'version': instance.version,
-  'messageId': instance.messageId,
-  'deviceId': instance.deviceId,
+  'message_id': instance.messageId,
+  'device_id': instance.deviceId,
   'timestamp': instance.timestamp,
   'payload': instance.payload,
 };
@@ -168,11 +169,11 @@ _ClipboardUpdateRelayMessage _$ClipboardUpdateRelayMessageFromJson(
 ) => _ClipboardUpdateRelayMessage(
   type: $enumDecode(_$SyncMessageTypeEnumMap, json['type']),
   version: (json['version'] as num?)?.toInt() ?? 1,
-  messageId: json['messageId'] as String,
-  deviceId: json['deviceId'] as String,
+  messageId: json['message_id'] as String,
+  deviceId: json['device_id'] as String,
   timestamp: json['timestamp'] as String,
   payload: ClipboardPayload.fromJson(json['payload'] as Map<String, dynamic>),
-  sourceDeviceId: json['sourceDeviceId'] as String,
+  sourceDeviceId: json['source_device_id'] as String,
 );
 
 Map<String, dynamic> _$ClipboardUpdateRelayMessageToJson(
@@ -180,18 +181,18 @@ Map<String, dynamic> _$ClipboardUpdateRelayMessageToJson(
 ) => <String, dynamic>{
   'type': _$SyncMessageTypeEnumMap[instance.type]!,
   'version': instance.version,
-  'messageId': instance.messageId,
-  'deviceId': instance.deviceId,
+  'message_id': instance.messageId,
+  'device_id': instance.deviceId,
   'timestamp': instance.timestamp,
-  'payload': instance.payload,
-  'sourceDeviceId': instance.sourceDeviceId,
+  'payload': instance.payload.toJson(),
+  'source_device_id': instance.sourceDeviceId,
 };
 
 _PongMessage _$PongMessageFromJson(Map<String, dynamic> json) => _PongMessage(
   type: $enumDecode(_$SyncMessageTypeEnumMap, json['type']),
   version: (json['version'] as num?)?.toInt() ?? 1,
-  messageId: json['messageId'] as String,
-  deviceId: json['deviceId'] as String,
+  messageId: json['message_id'] as String,
+  deviceId: json['device_id'] as String,
   timestamp: json['timestamp'] as String,
   payload: json['payload'] as Map<String, dynamic>?,
 );
@@ -200,8 +201,8 @@ Map<String, dynamic> _$PongMessageToJson(_PongMessage instance) =>
     <String, dynamic>{
       'type': _$SyncMessageTypeEnumMap[instance.type]!,
       'version': instance.version,
-      'messageId': instance.messageId,
-      'deviceId': instance.deviceId,
+      'message_id': instance.messageId,
+      'device_id': instance.deviceId,
       'timestamp': instance.timestamp,
       'payload': instance.payload,
     };
@@ -210,8 +211,8 @@ _ErrorMessage _$ErrorMessageFromJson(Map<String, dynamic> json) =>
     _ErrorMessage(
       type: $enumDecode(_$SyncMessageTypeEnumMap, json['type']),
       version: (json['version'] as num?)?.toInt() ?? 1,
-      messageId: json['messageId'] as String,
-      deviceId: json['deviceId'] as String,
+      messageId: json['message_id'] as String,
+      deviceId: json['device_id'] as String,
       timestamp: json['timestamp'] as String,
       payload: json['payload'] as Map<String, dynamic>,
     );
@@ -220,8 +221,8 @@ Map<String, dynamic> _$ErrorMessageToJson(_ErrorMessage instance) =>
     <String, dynamic>{
       'type': _$SyncMessageTypeEnumMap[instance.type]!,
       'version': instance.version,
-      'messageId': instance.messageId,
-      'deviceId': instance.deviceId,
+      'message_id': instance.messageId,
+      'device_id': instance.deviceId,
       'timestamp': instance.timestamp,
       'payload': instance.payload,
     };
@@ -229,8 +230,8 @@ Map<String, dynamic> _$ErrorMessageToJson(_ErrorMessage instance) =>
 _AckMessage _$AckMessageFromJson(Map<String, dynamic> json) => _AckMessage(
   type: $enumDecode(_$SyncMessageTypeEnumMap, json['type']),
   version: (json['version'] as num?)?.toInt() ?? 1,
-  messageId: json['messageId'] as String,
-  deviceId: json['deviceId'] as String,
+  messageId: json['message_id'] as String,
+  deviceId: json['device_id'] as String,
   timestamp: json['timestamp'] as String,
   payload: json['payload'] as Map<String, dynamic>,
 );
@@ -239,8 +240,8 @@ Map<String, dynamic> _$AckMessageToJson(_AckMessage instance) =>
     <String, dynamic>{
       'type': _$SyncMessageTypeEnumMap[instance.type]!,
       'version': instance.version,
-      'messageId': instance.messageId,
-      'deviceId': instance.deviceId,
+      'message_id': instance.messageId,
+      'device_id': instance.deviceId,
       'timestamp': instance.timestamp,
       'payload': instance.payload,
     };
@@ -250,8 +251,8 @@ _HistorySyncResponseMessage _$HistorySyncResponseMessageFromJson(
 ) => _HistorySyncResponseMessage(
   type: $enumDecode(_$SyncMessageTypeEnumMap, json['type']),
   version: (json['version'] as num?)?.toInt() ?? 1,
-  messageId: json['messageId'] as String,
-  deviceId: json['deviceId'] as String,
+  messageId: json['message_id'] as String,
+  deviceId: json['device_id'] as String,
   timestamp: json['timestamp'] as String,
   payload: json['payload'] as Map<String, dynamic>,
 );
@@ -261,8 +262,8 @@ Map<String, dynamic> _$HistorySyncResponseMessageToJson(
 ) => <String, dynamic>{
   'type': _$SyncMessageTypeEnumMap[instance.type]!,
   'version': instance.version,
-  'messageId': instance.messageId,
-  'deviceId': instance.deviceId,
+  'message_id': instance.messageId,
+  'device_id': instance.deviceId,
   'timestamp': instance.timestamp,
   'payload': instance.payload,
 };
@@ -271,8 +272,8 @@ _DeviceOnlineMessage _$DeviceOnlineMessageFromJson(Map<String, dynamic> json) =>
     _DeviceOnlineMessage(
       type: $enumDecode(_$SyncMessageTypeEnumMap, json['type']),
       version: (json['version'] as num?)?.toInt() ?? 1,
-      messageId: json['messageId'] as String,
-      deviceId: json['deviceId'] as String,
+      messageId: json['message_id'] as String,
+      deviceId: json['device_id'] as String,
       timestamp: json['timestamp'] as String,
       payload: json['payload'] as Map<String, dynamic>,
     );
@@ -282,8 +283,8 @@ Map<String, dynamic> _$DeviceOnlineMessageToJson(
 ) => <String, dynamic>{
   'type': _$SyncMessageTypeEnumMap[instance.type]!,
   'version': instance.version,
-  'messageId': instance.messageId,
-  'deviceId': instance.deviceId,
+  'message_id': instance.messageId,
+  'device_id': instance.deviceId,
   'timestamp': instance.timestamp,
   'payload': instance.payload,
 };
@@ -293,8 +294,8 @@ _DeviceOfflineMessage _$DeviceOfflineMessageFromJson(
 ) => _DeviceOfflineMessage(
   type: $enumDecode(_$SyncMessageTypeEnumMap, json['type']),
   version: (json['version'] as num?)?.toInt() ?? 1,
-  messageId: json['messageId'] as String,
-  deviceId: json['deviceId'] as String,
+  messageId: json['message_id'] as String,
+  deviceId: json['device_id'] as String,
   timestamp: json['timestamp'] as String,
   payload: json['payload'] as Map<String, dynamic>,
 );
@@ -304,8 +305,8 @@ Map<String, dynamic> _$DeviceOfflineMessageToJson(
 ) => <String, dynamic>{
   'type': _$SyncMessageTypeEnumMap[instance.type]!,
   'version': instance.version,
-  'messageId': instance.messageId,
-  'deviceId': instance.deviceId,
+  'message_id': instance.messageId,
+  'device_id': instance.deviceId,
   'timestamp': instance.timestamp,
   'payload': instance.payload,
 };
@@ -314,8 +315,8 @@ _AuthSuccessMessage _$AuthSuccessMessageFromJson(Map<String, dynamic> json) =>
     _AuthSuccessMessage(
       type: $enumDecode(_$SyncMessageTypeEnumMap, json['type']),
       version: (json['version'] as num?)?.toInt() ?? 1,
-      messageId: json['messageId'] as String,
-      deviceId: json['deviceId'] as String,
+      messageId: json['message_id'] as String,
+      deviceId: json['device_id'] as String,
       timestamp: json['timestamp'] as String,
     );
 
@@ -323,8 +324,8 @@ Map<String, dynamic> _$AuthSuccessMessageToJson(_AuthSuccessMessage instance) =>
     <String, dynamic>{
       'type': _$SyncMessageTypeEnumMap[instance.type]!,
       'version': instance.version,
-      'messageId': instance.messageId,
-      'deviceId': instance.deviceId,
+      'message_id': instance.messageId,
+      'device_id': instance.deviceId,
       'timestamp': instance.timestamp,
     };
 

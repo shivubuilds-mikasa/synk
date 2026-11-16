@@ -207,8 +207,8 @@ return $default(_that.contentType,_that.text);case _:
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class _ClipboardPayload implements ClipboardPayload {
   const _ClipboardPayload({this.contentType = ContentType.text, required this.text});
   factory _ClipboardPayload.fromJson(Map<String, dynamic> json) => _$ClipboardPayloadFromJson(json);
@@ -476,8 +476,8 @@ return $default(_that.type,_that.version,_that.messageId,_that.deviceId,_that.ti
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class _SyncMessageBase implements SyncMessageBase {
   const _SyncMessageBase({required this.type, this.version = 1, required this.messageId, required this.deviceId, required this.timestamp});
   factory _SyncMessageBase.fromJson(Map<String, dynamic> json) => _$SyncMessageBaseFromJson(json);
@@ -761,8 +761,8 @@ return $default(_that.type,_that.version,_that.messageId,_that.deviceId,_that.ti
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class _ClipboardUpdateMessage implements ClipboardUpdateMessage {
   const _ClipboardUpdateMessage({required this.type, this.version = 1, required this.messageId, required this.deviceId, required this.timestamp, required this.payload});
   factory _ClipboardUpdateMessage.fromJson(Map<String, dynamic> json) => _$ClipboardUpdateMessageFromJson(json);
@@ -1048,8 +1048,8 @@ return $default(_that.type,_that.version,_that.messageId,_that.deviceId,_that.ti
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class _PingMessage implements PingMessage {
   const _PingMessage({required this.type, this.version = 1, required this.messageId, required this.deviceId, required this.timestamp, final  Map<String, dynamic>? payload}): _payload = payload;
   factory _PingMessage.fromJson(Map<String, dynamic> json) => _$PingMessageFromJson(json);
@@ -1334,8 +1334,8 @@ return $default(_that.type,_that.version,_that.messageId,_that.deviceId,_that.ti
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class _DeliveryReceiptMessage implements DeliveryReceiptMessage {
   const _DeliveryReceiptMessage({required this.type, this.version = 1, required this.messageId, required this.deviceId, required this.timestamp, required final  Map<String, dynamic> payload}): _payload = payload;
   factory _DeliveryReceiptMessage.fromJson(Map<String, dynamic> json) => _$DeliveryReceiptMessageFromJson(json);
@@ -1618,8 +1618,8 @@ return $default(_that.type,_that.version,_that.messageId,_that.deviceId,_that.ti
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class _HistorySyncRequestMessage implements HistorySyncRequestMessage {
   const _HistorySyncRequestMessage({required this.type, this.version = 1, required this.messageId, required this.deviceId, required this.timestamp, required final  Map<String, dynamic> payload}): _payload = payload;
   factory _HistorySyncRequestMessage.fromJson(Map<String, dynamic> json) => _$HistorySyncRequestMessageFromJson(json);
@@ -1902,8 +1902,8 @@ return $default(_that.type,_that.version,_that.messageId,_that.deviceId,_that.ti
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class _ClipboardUpdateReceivedMessage implements ClipboardUpdateReceivedMessage {
   const _ClipboardUpdateReceivedMessage({required this.type, this.version = 1, required this.messageId, required this.deviceId, required this.timestamp, final  Map<String, dynamic> payload = const {}}): _payload = payload;
   factory _ClipboardUpdateReceivedMessage.fromJson(Map<String, dynamic> json) => _$ClipboardUpdateReceivedMessageFromJson(json);
@@ -2196,8 +2196,8 @@ return $default(_that.type,_that.version,_that.messageId,_that.deviceId,_that.ti
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class _ClipboardUpdateRelayMessage implements ClipboardUpdateRelayMessage {
   const _ClipboardUpdateRelayMessage({required this.type, this.version = 1, required this.messageId, required this.deviceId, required this.timestamp, required this.payload, required this.sourceDeviceId});
   factory _ClipboardUpdateRelayMessage.fromJson(Map<String, dynamic> json) => _$ClipboardUpdateRelayMessageFromJson(json);
@@ -2485,8 +2485,8 @@ return $default(_that.type,_that.version,_that.messageId,_that.deviceId,_that.ti
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class _PongMessage implements PongMessage {
   const _PongMessage({required this.type, this.version = 1, required this.messageId, required this.deviceId, required this.timestamp, final  Map<String, dynamic>? payload}): _payload = payload;
   factory _PongMessage.fromJson(Map<String, dynamic> json) => _$PongMessageFromJson(json);
@@ -2771,8 +2771,8 @@ return $default(_that.type,_that.version,_that.messageId,_that.deviceId,_that.ti
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class _ErrorMessage implements ErrorMessage {
   const _ErrorMessage({required this.type, this.version = 1, required this.messageId, required this.deviceId, required this.timestamp, required final  Map<String, dynamic> payload}): _payload = payload;
   factory _ErrorMessage.fromJson(Map<String, dynamic> json) => _$ErrorMessageFromJson(json);
@@ -3055,8 +3055,8 @@ return $default(_that.type,_that.version,_that.messageId,_that.deviceId,_that.ti
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class _AckMessage implements AckMessage {
   const _AckMessage({required this.type, this.version = 1, required this.messageId, required this.deviceId, required this.timestamp, required final  Map<String, dynamic> payload}): _payload = payload;
   factory _AckMessage.fromJson(Map<String, dynamic> json) => _$AckMessageFromJson(json);
@@ -3339,8 +3339,8 @@ return $default(_that.type,_that.version,_that.messageId,_that.deviceId,_that.ti
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class _HistorySyncResponseMessage implements HistorySyncResponseMessage {
   const _HistorySyncResponseMessage({required this.type, this.version = 1, required this.messageId, required this.deviceId, required this.timestamp, required final  Map<String, dynamic> payload}): _payload = payload;
   factory _HistorySyncResponseMessage.fromJson(Map<String, dynamic> json) => _$HistorySyncResponseMessageFromJson(json);
@@ -3623,8 +3623,8 @@ return $default(_that.type,_that.version,_that.messageId,_that.deviceId,_that.ti
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class _DeviceOnlineMessage implements DeviceOnlineMessage {
   const _DeviceOnlineMessage({required this.type, this.version = 1, required this.messageId, required this.deviceId, required this.timestamp, required final  Map<String, dynamic> payload}): _payload = payload;
   factory _DeviceOnlineMessage.fromJson(Map<String, dynamic> json) => _$DeviceOnlineMessageFromJson(json);
@@ -3907,8 +3907,8 @@ return $default(_that.type,_that.version,_that.messageId,_that.deviceId,_that.ti
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class _DeviceOfflineMessage implements DeviceOfflineMessage {
   const _DeviceOfflineMessage({required this.type, this.version = 1, required this.messageId, required this.deviceId, required this.timestamp, required final  Map<String, dynamic> payload}): _payload = payload;
   factory _DeviceOfflineMessage.fromJson(Map<String, dynamic> json) => _$DeviceOfflineMessageFromJson(json);
@@ -4190,8 +4190,8 @@ return $default(_that.type,_that.version,_that.messageId,_that.deviceId,_that.ti
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class _AuthSuccessMessage implements AuthSuccessMessage {
   const _AuthSuccessMessage({required this.type, this.version = 1, required this.messageId, required this.deviceId, required this.timestamp});
   factory _AuthSuccessMessage.fromJson(Map<String, dynamic> json) => _$AuthSuccessMessageFromJson(json);
@@ -6121,8 +6121,8 @@ return $default(_that.type,_that.token);case _:
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class _AuthMessage implements AuthMessage {
   const _AuthMessage({required this.type, required this.token});
   factory _AuthMessage.fromJson(Map<String, dynamic> json) => _$AuthMessageFromJson(json);

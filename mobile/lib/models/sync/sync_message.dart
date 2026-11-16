@@ -1,4 +1,4 @@
-// ignore_for_file: dangling_library_doc_comments, unnecessary_library_name
+// ignore_for_file: dangling_library_doc_comments, invalid_annotation_target, unnecessary_library_name
 
 /// Synchronization protocol message models for Synk mobile.
 ///
@@ -11,8 +11,10 @@ part 'sync_message.freezed.dart';
 part 'sync_message.g.dart';
 
 /// Types of synchronization messages matching backend SyncMessageType enum.
+@JsonEnum(valueField: 'value')
 enum SyncMessageType {
   // Client -> Server
+  auth('auth'),
   clipboardUpdate('clipboard.update'),
   ping('ping'),
   deliveryReceipt('delivery.receipt'),
@@ -34,6 +36,9 @@ enum SyncMessageType {
 
   /// Parse string to SyncMessageType.
   static SyncMessageType fromString(String value) {
+    if (value == 'auth_success' || value == 'authSuccess') {
+      return SyncMessageType.authSuccess;
+    }
     return SyncMessageType.values.firstWhere(
       (e) => e.value == value,
       orElse: () => throw ArgumentError('Unknown message type: $value'),
@@ -52,6 +57,7 @@ enum ContentType {
 /// Payload for clipboard synchronization messages.
 @freezed
 abstract class ClipboardPayload with _$ClipboardPayload {
+  @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
   const factory ClipboardPayload({
     @Default(ContentType.text) ContentType contentType,
     required String text,
@@ -64,6 +70,7 @@ abstract class ClipboardPayload with _$ClipboardPayload {
 /// Base synchronization message with common fields.
 @freezed
 abstract class SyncMessageBase with _$SyncMessageBase {
+  @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
   const factory SyncMessageBase({
     required SyncMessageType type,
     @Default(1) int version,
@@ -79,6 +86,7 @@ abstract class SyncMessageBase with _$SyncMessageBase {
 /// Client -> Server: Clipboard content update.
 @freezed
 abstract class ClipboardUpdateMessage with _$ClipboardUpdateMessage {
+  @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
   const factory ClipboardUpdateMessage({
     required SyncMessageType type,
     @Default(1) int version,
@@ -95,6 +103,7 @@ abstract class ClipboardUpdateMessage with _$ClipboardUpdateMessage {
 /// Client -> Server: Ping for connection health.
 @freezed
 abstract class PingMessage with _$PingMessage {
+  @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
   const factory PingMessage({
     required SyncMessageType type,
     @Default(1) int version,
@@ -111,6 +120,7 @@ abstract class PingMessage with _$PingMessage {
 /// Client -> Server: Delivery receipt for clipboard update.
 @freezed
 abstract class DeliveryReceiptMessage with _$DeliveryReceiptMessage {
+  @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
   const factory DeliveryReceiptMessage({
     required SyncMessageType type,
     @Default(1) int version,
@@ -127,6 +137,7 @@ abstract class DeliveryReceiptMessage with _$DeliveryReceiptMessage {
 /// Client -> Server: Request clipboard history sync.
 @freezed
 abstract class HistorySyncRequestMessage with _$HistorySyncRequestMessage {
+  @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
   const factory HistorySyncRequestMessage({
     required SyncMessageType type,
     @Default(1) int version,
@@ -143,6 +154,7 @@ abstract class HistorySyncRequestMessage with _$HistorySyncRequestMessage {
 /// Server -> Client: Acknowledgment that clipboard update was received.
 @freezed
 abstract class ClipboardUpdateReceivedMessage with _$ClipboardUpdateReceivedMessage {
+  @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
   const factory ClipboardUpdateReceivedMessage({
     required SyncMessageType type,
     @Default(1) int version,
@@ -159,6 +171,7 @@ abstract class ClipboardUpdateReceivedMessage with _$ClipboardUpdateReceivedMess
 /// Server -> Client: Relayed clipboard update from paired device.
 @freezed
 abstract class ClipboardUpdateRelayMessage with _$ClipboardUpdateRelayMessage {
+  @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
   const factory ClipboardUpdateRelayMessage({
     required SyncMessageType type,
     @Default(1) int version,
@@ -176,6 +189,7 @@ abstract class ClipboardUpdateRelayMessage with _$ClipboardUpdateRelayMessage {
 /// Server -> Client: Ping response.
 @freezed
 abstract class PongMessage with _$PongMessage {
+  @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
   const factory PongMessage({
     required SyncMessageType type,
     @Default(1) int version,
@@ -192,6 +206,7 @@ abstract class PongMessage with _$PongMessage {
 /// Server -> Client: Error response.
 @freezed
 abstract class ErrorMessage with _$ErrorMessage {
+  @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
   const factory ErrorMessage({
     required SyncMessageType type,
     @Default(1) int version,
@@ -208,6 +223,7 @@ abstract class ErrorMessage with _$ErrorMessage {
 /// Server -> Client: Generic acknowledgment.
 @freezed
 abstract class AckMessage with _$AckMessage {
+  @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
   const factory AckMessage({
     required SyncMessageType type,
     @Default(1) int version,
@@ -224,6 +240,7 @@ abstract class AckMessage with _$AckMessage {
 /// Server -> Client: Clipboard history sync response.
 @freezed
 abstract class HistorySyncResponseMessage with _$HistorySyncResponseMessage {
+  @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
   const factory HistorySyncResponseMessage({
     required SyncMessageType type,
     @Default(1) int version,
@@ -240,6 +257,7 @@ abstract class HistorySyncResponseMessage with _$HistorySyncResponseMessage {
 /// Server -> Client: Notification that a paired device came online.
 @freezed
 abstract class DeviceOnlineMessage with _$DeviceOnlineMessage {
+  @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
   const factory DeviceOnlineMessage({
     required SyncMessageType type,
     @Default(1) int version,
@@ -256,6 +274,7 @@ abstract class DeviceOnlineMessage with _$DeviceOnlineMessage {
 /// Server -> Client: Notification that a paired device went offline.
 @freezed
 abstract class DeviceOfflineMessage with _$DeviceOfflineMessage {
+  @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
   const factory DeviceOfflineMessage({
     required SyncMessageType type,
     @Default(1) int version,
@@ -272,6 +291,7 @@ abstract class DeviceOfflineMessage with _$DeviceOfflineMessage {
 /// Server -> Client: Authentication success response.
 @freezed
 abstract class AuthSuccessMessage with _$AuthSuccessMessage {
+  @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
   const factory AuthSuccessMessage({
     required SyncMessageType type,
     @Default(1) int version,
@@ -347,28 +367,29 @@ sealed class ServerMessage with _$ServerMessage {
       throw ArgumentError('Missing message type');
     }
     final type = SyncMessageType.fromString(typeStr);
+    final normalizedJson = <String, dynamic>{...json, 'type': type.value};
     switch (type) {
       case SyncMessageType.clipboardUpdateReceived:
         return ServerMessage.clipboardUpdateReceived(
-            ClipboardUpdateReceivedMessage.fromJson(json));
+            ClipboardUpdateReceivedMessage.fromJson(normalizedJson));
       case SyncMessageType.clipboardUpdateRelay:
         return ServerMessage.clipboardUpdateRelay(
-            ClipboardUpdateRelayMessage.fromJson(json));
+            ClipboardUpdateRelayMessage.fromJson(normalizedJson));
       case SyncMessageType.pong:
-        return ServerMessage.pong(PongMessage.fromJson(json));
+        return ServerMessage.pong(PongMessage.fromJson(normalizedJson));
       case SyncMessageType.error:
-        return ServerMessage.error(ErrorMessage.fromJson(json));
+        return ServerMessage.error(ErrorMessage.fromJson(normalizedJson));
       case SyncMessageType.ack:
-        return ServerMessage.ack(AckMessage.fromJson(json));
+        return ServerMessage.ack(AckMessage.fromJson(normalizedJson));
       case SyncMessageType.historySyncResponse:
         return ServerMessage.historySyncResponse(
-            HistorySyncResponseMessage.fromJson(json));
+            HistorySyncResponseMessage.fromJson(normalizedJson));
       case SyncMessageType.deviceOnline:
-        return ServerMessage.deviceOnline(DeviceOnlineMessage.fromJson(json));
+        return ServerMessage.deviceOnline(DeviceOnlineMessage.fromJson(normalizedJson));
       case SyncMessageType.deviceOffline:
-        return ServerMessage.deviceOffline(DeviceOfflineMessage.fromJson(json));
+        return ServerMessage.deviceOffline(DeviceOfflineMessage.fromJson(normalizedJson));
       case SyncMessageType.authSuccess:
-        return ServerMessage.authSuccess(AuthSuccessMessage.fromJson(json));
+        return ServerMessage.authSuccess(AuthSuccessMessage.fromJson(normalizedJson));
       default:
         throw ArgumentError('Unknown server message type: $typeStr');
     }
@@ -407,6 +428,7 @@ sealed class SyncMessage with _$SyncMessage {
 /// Authentication message sent by client (first message).
 @freezed
 abstract class AuthMessage with _$AuthMessage {
+  @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
   const factory AuthMessage({
     required SyncMessageType type,
     required String token,
