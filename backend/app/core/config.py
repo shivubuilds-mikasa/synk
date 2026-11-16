@@ -7,6 +7,7 @@ features (auth, database, pairing, etc.) can extend this without changes.
 """
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import field_validator
 
 
 class Settings(BaseSettings):
@@ -16,6 +17,16 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     DEBUG: bool = False
     DATABASE_URL: str = "postgresql+asyncpg://synk:synk@localhost:5432/synk"
+
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def use_asyncpg_driver(cls, value: str) -> str:
+        """Render provides a standard PostgreSQL URL; SQLAlchemy needs asyncpg."""
+        if value.startswith("postgres://"):
+            return "postgresql+asyncpg://" + value.removeprefix("postgres://")
+        if value.startswith("postgresql://"):
+            return "postgresql+asyncpg://" + value.removeprefix("postgresql://")
+        return value
 
     model_config = SettingsConfigDict(
         env_file=".env",
