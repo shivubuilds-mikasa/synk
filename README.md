@@ -1,6 +1,5 @@
 # Synk
 
-
 Synk synchronizes text clipboard content between paired mobile and desktop devices through a FastAPI backend. The repository contains a Flutter mobile app, an Electron desktop app, and a PostgreSQL-backed service.
 
 ## Current status
