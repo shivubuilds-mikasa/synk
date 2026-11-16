@@ -264,7 +264,7 @@ export class ClipboardSyncService extends EventEmitter<ClipboardSyncServiceEvent
     }
 
     this.lastReceivedMessageId = message.message_id;
-    this.clipboardService.write(text, false);
+    this.clipboardService.write(text);
     this.emit('clipboardReceived', text, message.source_device_id);
 
     // Send delivery receipt
@@ -293,7 +293,7 @@ export class ClipboardSyncService extends EventEmitter<ClipboardSyncServiceEvent
 
         // Only apply if newer than what we have
         if (messageId !== this.lastReceivedMessageId) {
-          this.clipboardService.write(text, false);
+          this.clipboardService.write(text);
           this.emit('clipboardReceived', text, entry.source_device_id ?? 'unknown');
           this.lastReceivedMessageId = messageId;
           // Send delivery receipt for synced entries

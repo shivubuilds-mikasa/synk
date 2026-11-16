@@ -30,8 +30,7 @@ class ClipboardService {
   /// Returns empty string if clipboard is empty or unavailable.
   Future<String> read() async {
     try {
-      final value = await Clipboard.getData('text/plain');
-      final text = value?.text ?? '';
+      final text = await _readSystemClipboard();
       _lastReadValue = text;
       return text;
     } catch (e) {
@@ -40,16 +39,25 @@ class ClipboardService {
     }
   }
 
+  Future<String> _readSystemClipboard() async {
+    try {
+      final value = await Clipboard.getData('text/plain');
+      return value?.text ?? '';
+    } catch (e) {
+      debugPrint('Failed to poll clipboard: $e');
+      return '';
+    }
+  }
+
   /// Writes content to the clipboard.
   ///
   /// [text] - The text to write.
-  /// [markAsLast] - Whether to update _lastReadValue (set false for incoming sync to prevent loop)
-  Future<bool> write(String text, {bool markAsLast = true}) async {
+  Future<bool> write(String text) async {
     try {
       await Clipboard.setData(ClipboardData(text: text));
-      if (markAsLast) {
-        _lastReadValue = text;
-      }
+      // Treat received clipboard content as the new baseline so polling does
+      // not send the same text straight back to its source device.
+      _lastReadValue = text;
       return true;
     } catch (e) {
       debugPrint('Failed to write clipboard: $e');
@@ -65,10 +73,12 @@ class ClipboardService {
     _pollingTimer = Timer.periodic(
       Duration(milliseconds: intervalMs),
       (_) async {
-        final current = await read();
+        final current = await _readSystemClipboard();
         if (current.isNotEmpty && current != _lastReadValue) {
           _lastReadValue = current;
           _changeController.add(current);
+        } else if (current.isEmpty && _lastReadValue != null) {
+          _lastReadValue = '';
         }
       },
     );

@@ -3,9 +3,9 @@
   <h1>Synk</h1>
   <p><strong>Your text, wherever you need it.</strong><br />Pair your phone and desktop once, then keep text moving between them.</p>
   <p>
-    <a href="https://github.com/shivubuilds-mikasa/synk/releases/download/v1.0.5/Synk-Setup-1.0.5.exe">Download Windows</a>
+    <a href="https://github.com/shivubuilds-mikasa/synk/releases/download/v1.0.6/Synk-Setup-1.0.5.exe">Download Windows</a>
     ·
-    <a href="https://github.com/shivubuilds-mikasa/synk/releases/download/v1.0.5/app-release.apk">Download Android</a>
+    <a href="https://github.com/shivubuilds-mikasa/synk/releases/download/v1.0.6/app-release.apk">Download Android</a>
     ·
     <a href="https://synk-api-vb4q.onrender.com/health">API health</a>
   </p>
@@ -15,8 +15,8 @@ Synk is a text-only clipboard sync app with Flutter mobile and Electron desktop 
 
 ## Try Synk
 
-1. Install the [Windows desktop app](https://github.com/shivubuilds-mikasa/synk/releases/download/v1.0.5/Synk-Setup-1.0.5.exe).
-2. Install the [Android APK](https://github.com/shivubuilds-mikasa/synk/releases/download/v1.0.5/app-release.apk).
+1. Install the [Windows desktop app](https://github.com/shivubuilds-mikasa/synk/releases/download/v1.0.6/Synk-Setup-1.0.5.exe).
+2. Install the [Android APK](https://github.com/shivubuilds-mikasa/synk/releases/download/v1.0.6/app-release.apk).
 3. Open both apps. Register the phone with a name; desktop registration happens automatically.
 4. On either device, create a pairing code. Enter that code on the other device.
 5. Copy text on one device and confirm it appears in Synk on the other.

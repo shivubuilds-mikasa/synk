@@ -244,7 +244,7 @@ class ClipboardSyncService {
     final text = msg.payload.text;
     if (text.isNotEmpty) {
       _lastReceivedMessageId = msg.messageId;
-      _clipboardService.write(text, markAsLast: false);
+      _clipboardService.write(text);
       _receivedController.add(text);
 
       // Send delivery receipt
@@ -273,7 +273,7 @@ class ClipboardSyncService {
         if (text != null && text.isNotEmpty && messageId != null) {
           // Only apply if newer than what we have
           if (messageId != _lastReceivedMessageId) {
-            _clipboardService.write(text, markAsLast: false);
+            _clipboardService.write(text);
             _receivedController.add(text);
             _lastReceivedMessageId = messageId;
             // Send delivery receipt for synced entries

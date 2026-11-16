@@ -48,9 +48,18 @@ export class ClipboardService extends EventEmitter<ClipboardServiceEvents> {
    */
   read(): string {
     try {
-      const text = clipboard.readText();
+      const text = this.readSystemClipboard();
       this.lastContent = text;
       return text;
+    } catch (error) {
+      this.emit('error', error as Error);
+      return '';
+    }
+  }
+
+  private readSystemClipboard(): string {
+    try {
+      return clipboard.readText();
     } catch (error) {
       this.emit('error', error as Error);
       return '';
@@ -61,14 +70,12 @@ export class ClipboardService extends EventEmitter<ClipboardServiceEvents> {
    * Writes text to the clipboard.
    *
    * @param text - Text to write
-   * @param markAsLast - Whether to update lastContent to prevent loop detection
    */
-  write(text: string, markAsLast: boolean = true): void {
+  write(text: string): void {
     try {
       clipboard.writeText(text);
-      if (markAsLast) {
-        this.lastContent = text;
-      }
+      // Received text becomes the polling baseline too, preventing an echo.
+      this.lastContent = text;
     } catch (error) {
       this.emit('error', error as Error);
     }
@@ -118,10 +125,10 @@ export class ClipboardService extends EventEmitter<ClipboardServiceEvents> {
   private checkForChanges(): void {
     if (this.disposed) return;
 
-    const currentContent = this.read();
-    if (currentContent && currentContent !== this.lastContent) {
+    const currentContent = this.readSystemClipboard();
+    if (currentContent !== this.lastContent) {
       this.lastContent = currentContent;
-      this.emit('change', currentContent);
+      if (currentContent) this.emit('change', currentContent);
     }
   }
 

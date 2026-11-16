@@ -155,9 +155,9 @@ class MockClipboardService {
     return this.lastReadValue;
   }
 
-  write(text: string, markAsLast: boolean = true): void {
+  write(text: string): void {
     this.lastWritten = text;
-    if (markAsLast) this.lastReadValue = text;
+    this.lastReadValue = text;
   }
 
   startPolling() {}
