@@ -74,6 +74,10 @@ contextBridge.exposeInMainWorld('api', {
   getPairedDevices: (): Promise<PairedDevicesResponse> =>
     ipcRenderer.invoke('pairing:list'),
 
+  /** Get the paired devices currently known to have live sync connections. */
+  getOnlinePairedDeviceIds: (): Promise<string[]> =>
+    ipcRenderer.invoke('pairing:online-device-ids'),
+
   /** Subscribe to clipboard sync state changes. */
   onClipboardSyncStateChange: (callback: (state: ClipboardSyncState) => void) => {
     const handler = (_event: Electron.IpcRendererEvent, state: ClipboardSyncState) => {

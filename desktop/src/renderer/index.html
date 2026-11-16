@@ -560,12 +560,14 @@
 
     async function refreshPairedDevices() {
       const response = await window.api.getPairedDevices();
+      const liveOnlineDeviceIds = new Set(await window.api.getOnlinePairedDeviceIds());
       const onlineDevices = new Map(Array.from(pairedDevices.entries()).filter(([, info]) => info.online));
       pairedDevices.clear();
       for (const device of response.paired_devices) {
         pairedDevices.set(device.device_id, {
           name: device.device_name,
-          online: onlineDevices.get(device.device_id)?.online ?? false,
+          online: liveOnlineDeviceIds.has(device.device_id) ||
+            (onlineDevices.get(device.device_id)?.online ?? false),
         });
       }
       renderPairedDevices();

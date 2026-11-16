@@ -171,6 +171,27 @@ def test_connection_manager_get_connection_count():
     asyncio.run(run_test())
 
 
+def test_disconnect_only_reports_offline_after_last_device_connection():
+    """A dropped old socket must not mark a device offline during reconnect."""
+    test_manager = ConnectionManager()
+
+    class MockWebSocket:
+        pass
+
+    async def run_test():
+        first = MockWebSocket()
+        second = MockWebSocket()
+        await test_manager.connect("device-1", first)
+        await test_manager.connect("device-1", second)
+
+        assert await test_manager.disconnect("device-1", first) is False
+        assert test_manager.is_connected("device-1") is True
+        assert await test_manager.disconnect("device-1", second) is True
+        assert test_manager.is_connected("device-1") is False
+
+    asyncio.run(run_test())
+
+
 def test_connection_manager_send_to_paired_devices():
     """Test ConnectionManager.send_to_paired_devices with mock pairing registry."""
     test_manager = ConnectionManager()

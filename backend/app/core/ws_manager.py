@@ -38,20 +38,23 @@ class ConnectionManager:
             self._websocket_to_device[websocket] = device_id
         logger.info(f"Device {device_id} connected. Active connections for device: {len(self._active_connections[device_id])}")
 
-    async def disconnect(self, device_id: str, websocket: WebSocket) -> None:
+    async def disconnect(self, device_id: str, websocket: WebSocket) -> bool:
         """Remove a WebSocket connection from tracking.
 
         Args:
             device_id: Unique identifier for the device.
             websocket: The WebSocket connection to remove.
         """
+        is_last_connection = False
         async with self._lock:
+            was_tracked = self._websocket_to_device.pop(websocket, None) == device_id
             if device_id in self._active_connections:
                 self._active_connections[device_id].discard(websocket)
                 if not self._active_connections[device_id]:
                     del self._active_connections[device_id]
-            self._websocket_to_device.pop(websocket, None)
+                    is_last_connection = was_tracked
         logger.info(f"Device {device_id} disconnected. Remaining connections for device: {len(self._active_connections.get(device_id, set()))}")
+        return is_last_connection
 
     async def send_personal_message(self, device_id: str, message: dict) -> bool:
         """Send a message to a specific device.

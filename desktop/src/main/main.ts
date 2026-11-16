@@ -10,6 +10,7 @@ import { pairingService } from './services/pairing-service';
 let mainWindow: BrowserWindow | null = null;
 let clipboardSyncService: ClipboardSyncService | null = null;
 let clipboardService: ClipboardService | null = null;
+const onlinePairedDeviceIds = new Set<string>();
 
 /**
  * Create the main application window.
@@ -141,10 +142,12 @@ async function initializeClipboardSync(): Promise<void> {
 
   // Subscribe to paired device online/offline
   clipboardSyncService.on('pairedDeviceOnline', (deviceId) => {
+    onlinePairedDeviceIds.add(deviceId);
     sendPairedDeviceOnlineToRenderer(deviceId);
   });
 
   clipboardSyncService.on('pairedDeviceOffline', (deviceId) => {
+    onlinePairedDeviceIds.delete(deviceId);
     sendPairedDeviceOfflineToRenderer(deviceId);
   });
 
@@ -190,6 +193,7 @@ function setupIpcHandlers(): void {
     pairingService.confirmCode(code),
   );
   ipcMain.handle('pairing:list', () => pairingService.getPairedDevices());
+  ipcMain.handle('pairing:online-device-ids', () => [...onlinePairedDeviceIds]);
 
 }
 

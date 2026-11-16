@@ -179,6 +179,22 @@ async def websocket_endpoint(websocket: WebSocket, claimed_device_id: str) -> No
     # Register connection under authenticated identity
     await manager.connect(device_id, websocket)
 
+    # Tell the newly connected device which of its paired devices are already
+    # online. Without this snapshot, devices that connected earlier never send
+    # another online event, leaving the desktop's initial list stale.
+    for paired_device in await pairing_registry.get_paired_devices(device_id):
+        if not manager.is_connected(paired_device.device_id):
+            continue
+        paired_online_msg = DeviceOnlineMessage(
+            message_id=secrets.token_hex(16),
+            device_id=paired_device.device_id,
+            timestamp=SyncMessageBase.generate_timestamp(),
+            payload={"device_id": paired_device.device_id},
+        )
+        await manager.send_personal_message(
+            device_id, json.loads(paired_online_msg.model_dump_json())
+        )
+
     # Sync undelivered clipboard entries for this device (re-sync missed updates)
     async with database.session() as session:
         clipboard_repo = ClipboardRepository(session)
@@ -456,17 +472,30 @@ async def websocket_endpoint(websocket: WebSocket, claimed_device_id: str) -> No
                 await websocket.send_text(error_msg.model_dump_json())
 
     except WebSocketDisconnect:
-        # Notify paired devices that this device is offline
-        offline_msg = DeviceOfflineMessage(
-            message_id=secrets.token_hex(16),
-            device_id=device_id,
-            timestamp=SyncMessageBase.generate_timestamp(),
-            payload={"device_id": device_id},
-        )
-        await manager.send_to_paired_devices(device_id, json.loads(offline_msg.model_dump_json()))
-
-        await manager.disconnect(device_id, websocket)
+        is_last_connection = await manager.disconnect(device_id, websocket)
+        if is_last_connection and not manager.is_connected(device_id):
+            # A reconnect may briefly overlap the old socket. Only announce
+            # offline after the final active connection has gone away.
+            offline_msg = DeviceOfflineMessage(
+                message_id=secrets.token_hex(16),
+                device_id=device_id,
+                timestamp=SyncMessageBase.generate_timestamp(),
+                payload={"device_id": device_id},
+            )
+            await manager.send_to_paired_devices(
+                device_id, json.loads(offline_msg.model_dump_json())
+            )
         logger.info(f"Device {device_id} disconnected normally")
     except Exception as e:
         logger.error(f"Unexpected error for device {device_id}: {e}")
-        await manager.disconnect(device_id, websocket)
+        is_last_connection = await manager.disconnect(device_id, websocket)
+        if is_last_connection and not manager.is_connected(device_id):
+            offline_msg = DeviceOfflineMessage(
+                message_id=secrets.token_hex(16),
+                device_id=device_id,
+                timestamp=SyncMessageBase.generate_timestamp(),
+                payload={"device_id": device_id},
+            )
+            await manager.send_to_paired_devices(
+                device_id, json.loads(offline_msg.model_dump_json())
+            )
