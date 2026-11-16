@@ -6,7 +6,7 @@
  */
 
 interface AppConfig {
-  /** Backend API base URL. Default: http://127.0.0.1:8000 */
+  /** Backend API base URL. Default: the hosted Synk test backend. */
   backendUrl: string;
   /** Device name to use during registration. */
   deviceName: string;
@@ -23,7 +23,7 @@ interface AppConfig {
  * Development defaults are provided; override via environment variables if needed.
  */
 export function getConfig(): AppConfig {
-  const backendUrl = process.env.SYNK_BACKEND_URL ?? 'http://127.0.0.1:8000';
+  const backendUrl = process.env.SYNK_BACKEND_URL ?? 'https://synk-api-vb4q.onrender.com';
   return {
     backendUrl: backendUrl.replace(/\/$/, ''), // Strip trailing slash
     deviceName: process.env.SYNK_DEVICE_NAME ?? getDefaultDeviceName(),

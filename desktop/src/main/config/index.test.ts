@@ -22,7 +22,7 @@ describe('config', () => {
 
       const config = getConfig();
 
-      expect(config.backendUrl).toBe('http://127.0.0.1:8000');
+      expect(config.backendUrl).toBe('https://synk-api-vb4q.onrender.com');
       expect(config.requestTimeoutMs).toBe(10000);
       expect(config.storageServiceName).toBe('synk-desktop');
       expect(config.storageAccountName).toBe('synk-credentials');
