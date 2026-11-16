@@ -83,12 +83,29 @@ export class DeviceService {
       return;
     }
     if (existing) {
-      this.setState({
-        authState: AuthState.AUTHENTICATED,
-        deviceInfo: toDeviceInfo(existing),
-        error: null,
-      });
-      return;
+      const validation = await apiClient.getDevice(existing.deviceId, existing.authToken);
+      if (validation.ok) {
+        this.setState({
+          authState: AuthState.AUTHENTICATED,
+          deviceInfo: toDeviceInfo(existing),
+          error: null,
+        });
+        return;
+      }
+
+      if ([401, 403, 404].includes(validation.error.statusCode ?? 0)) {
+        // Credentials may belong to a different backend (for example, after
+        // switching from a local server to the hosted test server). Replace
+        // them with a fresh registration rather than leaving the app half signed in.
+        await secureStorage.deleteCredentials().catch(() => undefined);
+      } else {
+        this.setState({
+          authState: AuthState.ERROR,
+          deviceInfo: toDeviceInfo(existing),
+          error: `Failed to verify stored credentials: ${validation.error.message}`,
+        });
+        return;
+      }
     }
 
     // No credentials - register

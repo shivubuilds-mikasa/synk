@@ -24,10 +24,13 @@ interface AppConfig {
  */
 export function getConfig(): AppConfig {
   const backendUrl = process.env.SYNK_BACKEND_URL ?? 'https://synk-api-vb4q.onrender.com';
+  const isRenderBackend = new URL(backendUrl).hostname.endsWith('.onrender.com');
   return {
     backendUrl: backendUrl.replace(/\/$/, ''), // Strip trailing slash
     deviceName: process.env.SYNK_DEVICE_NAME ?? getDefaultDeviceName(),
-    requestTimeoutMs: Number(process.env.SYNK_REQUEST_TIMEOUT_MS ?? 10000),
+    requestTimeoutMs: Number(
+      process.env.SYNK_REQUEST_TIMEOUT_MS ?? (isRenderBackend ? 65000 : 10000),
+    ),
     storageServiceName: 'synk-desktop',
     storageAccountName: 'synk-credentials',
   };

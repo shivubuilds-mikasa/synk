@@ -622,7 +622,13 @@
         const unsubscribeOnline = window.api.onPairedDeviceOnline((deviceId) => updatePairedDevices(deviceId, true));
         const unsubscribeOffline = window.api.onPairedDeviceOffline((deviceId) => updatePairedDevices(deviceId, false));
 
-        await refreshPairedDevices();
+        try {
+          await refreshPairedDevices();
+        } catch (error) {
+          // Pairing lookup can fail independently of device registration or
+          // clipboard sync. Keep the rest of the desktop app usable.
+          showPairingError(error instanceof Error ? error.message : String(error));
+        }
 
         createPairingCodeBtn.addEventListener('click', async () => {
           pairingError.classList.add('hidden');

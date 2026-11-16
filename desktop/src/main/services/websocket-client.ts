@@ -70,7 +70,8 @@ export const DEFAULT_CONFIG: WebSocketClientConfig = {
   backoffMultiplier: 2.0,
   jitterFactor: 0.3,
   pingIntervalMs: 30000,
-  connectionTimeoutMs: 10000,
+  // The free hosted test service may need about 50 seconds to wake from idle.
+  connectionTimeoutMs: 65000,
   maxMessageSizeBytes: 200000,
 };
 
@@ -195,8 +196,9 @@ export class SynkWebSocketClient extends EventEmitter<SynkWebSocketClientEvents>
     this.setState(WebSocketConnectionState.Disconnected);
 
     if (this.ws) {
-      this.ws.close(1000, 'Normal closure');
+      const socket = this.ws;
       this.ws = null;
+      socket.close(1000, 'Normal closure');
     }
   }
 
@@ -368,16 +370,17 @@ export class SynkWebSocketClient extends EventEmitter<SynkWebSocketClientEvents>
     this.cancelPingTimer();
     this.authenticated = false;
 
-    // Don't schedule reconnect if we're already in Error state (connection error already scheduled one)
-    // Or if we're explicitly disconnecting (state = Disconnected)
-    if (this.state !== WebSocketConnectionState.Disconnected &&
-        this.state !== WebSocketConnectionState.Error) {
-      this.setState(WebSocketConnectionState.Disconnected);
-      this.scheduleReconnect();
-    } else if (this.state === WebSocketConnectionState.Error) {
-      // Already in error state, just update to Disconnected but don't schedule another reconnect
-      this.setState(WebSocketConnectionState.Disconnected);
+    // An explicit disconnect or an error handler that already scheduled a
+    // retry must not create another reconnect timer.
+    if (
+      this.state === WebSocketConnectionState.Disconnected ||
+      this.state === WebSocketConnectionState.Reconnecting
+    ) {
+      return;
     }
+
+    this.setState(WebSocketConnectionState.Disconnected);
+    this.scheduleReconnect();
   }
 
   private handleConnectionError(error: Error): void {
@@ -389,10 +392,13 @@ export class SynkWebSocketClient extends EventEmitter<SynkWebSocketClientEvents>
     this.emit('error', error);
 
     if (this.ws) {
-      this.ws.close(1006, 'Abnormal closure');
+      const socket = this.ws;
       this.ws = null;
+      // 1006 is a reserved close status and cannot be sent in a close frame.
+      // terminate() aborts the connection without attempting an invalid frame.
+      socket.terminate();
     }
-    // Reconnect will be scheduled in onClose when the WebSocket actually closes
+    this.scheduleReconnect();
   }
 
   private handleError(error: Error): void {
@@ -403,7 +409,10 @@ export class SynkWebSocketClient extends EventEmitter<SynkWebSocketClientEvents>
 
   private scheduleReconnect(): void {
     if (this.disposed) return;
-    if (this.state === WebSocketConnectionState.Reconnecting) return;
+    if (
+      this.state === WebSocketConnectionState.Reconnecting ||
+      this.reconnectTimer !== null
+    ) return;
 
     this.setState(WebSocketConnectionState.Reconnecting);
 
@@ -425,6 +434,7 @@ export class SynkWebSocketClient extends EventEmitter<SynkWebSocketClientEvents>
     );
 
     this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = null;
       if (!this.disposed) {
         this.connect();
       }

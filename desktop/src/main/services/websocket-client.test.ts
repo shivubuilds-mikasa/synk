@@ -35,6 +35,7 @@ class MockWebSocket {
   readyState = 0;
 
   sentMessages: string[] = [];
+  closeCalls: Array<{ code: number; reason: string }> = [];
 
   onopen: (() => void) | null = null;
   onmessage: ((event: { data: Buffer }) => void) | null = null;
@@ -42,6 +43,7 @@ class MockWebSocket {
   onclose: ((code: number, reason: string) => void) | null = null;
 
   closed = false;
+  terminated = false;
 
   private eventHandlers: Map<string, Function[]> = new Map();
 
@@ -85,6 +87,10 @@ class MockWebSocket {
   }
 
   close(code?: number, reason?: string) {
+    this.closeCalls.push({
+      code: code ?? 1000,
+      reason: reason ?? 'Normal closure',
+    });
     this.closed = true;
     this.readyState = 3;
 
@@ -101,6 +107,11 @@ class MockWebSocket {
       closeCode,
       closeReason
     );
+  }
+
+  terminate() {
+    this.terminated = true;
+    this.simulateClose(1006, 'Abnormal closure');
   }
 
   simulateOpen() {
@@ -467,12 +478,10 @@ describe('SynkWebSocketClient', () => {
         )
       );
 
-      expect([
-        WebSocketConnectionState.Error,
-        WebSocketConnectionState.Disconnected,
-      ]).toContain(
-        client.connectionState
-      );
+      expect(client.connectionState).toBe(WebSocketConnectionState.Reconnecting);
+      expect(ws!.terminated).toBe(true);
+      expect(ws!.closed).toBe(true);
+      expect(ws!.closeCalls).toEqual([]);
 
       expect(
         errorHandler
@@ -490,6 +499,23 @@ describe('SynkWebSocketClient', () => {
       );
 
       await vi.runAllTimersAsync();
+    });
+
+    it('reconnects after an authentication timeout without sending an invalid close code', async () => {
+      const errorHandler = vi.fn();
+      client.on('error', errorHandler);
+
+      await client.connect();
+      const ws = MockWebSocket.getLastInstance();
+      expect(ws).not.toBeNull();
+
+      vi.advanceTimersByTime(DEFAULT_CONFIG.connectionTimeoutMs);
+
+      expect(ws!.terminated).toBe(true);
+      expect(ws!.closed).toBe(true);
+      expect(ws!.closeCalls).toEqual([]);
+      expect(client.connectionState).toBe(WebSocketConnectionState.Reconnecting);
+      expect(errorHandler).toHaveBeenCalledOnce();
     });
 
 

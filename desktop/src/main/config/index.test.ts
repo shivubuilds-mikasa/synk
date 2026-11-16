@@ -23,7 +23,7 @@ describe('config', () => {
       const config = getConfig();
 
       expect(config.backendUrl).toBe('https://synk-api-vb4q.onrender.com');
-      expect(config.requestTimeoutMs).toBe(10000);
+      expect(config.requestTimeoutMs).toBe(65000);
       expect(config.storageServiceName).toBe('synk-desktop');
       expect(config.storageAccountName).toBe('synk-credentials');
       expect(config.deviceName).toBeDefined();
@@ -36,6 +36,7 @@ describe('config', () => {
       const config = getConfig();
 
       expect(config.backendUrl).toBe('http://custom-backend:9000');
+      expect(config.requestTimeoutMs).toBe(10000);
     });
 
     it('uses SYNK_DEVICE_NAME from environment', () => {

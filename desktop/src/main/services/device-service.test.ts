@@ -10,6 +10,7 @@ import { DeviceCredentials, DeviceType, DeviceRegistrationResponse } from '../mo
 vi.mock('../api/client', () => ({
   apiClient: {
     registerDevice: vi.fn(),
+    getDevice: vi.fn(),
   },
   ApiError: class ApiError extends Error {
     constructor(message: string, public statusCode: number | null = null, public isNetworkError: boolean = false) {
@@ -45,6 +46,14 @@ describe('DeviceService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    (apiClient.getDevice as any).mockResolvedValue({
+      ok: true,
+      data: {
+        device_id: 'id-1',
+        device_name: 'Test Device',
+        device_type: DeviceType.DESKTOP,
+      },
+    });
     service = new DeviceService();
   });
 
@@ -69,6 +78,60 @@ describe('DeviceService', () => {
         deviceType: DeviceType.DESKTOP,
       });
       expect(state.error).toBeNull();
+      expect(apiClient.getDevice).toHaveBeenCalledWith('id-1', 'synk_token');
+    });
+
+    it('re-registers when stored credentials belong to another backend', async () => {
+      const oldCredentials: DeviceCredentials = {
+        deviceId: 'old-id',
+        deviceName: 'Old Device',
+        deviceType: DeviceType.DESKTOP,
+        authToken: 'old-backend-token',
+      };
+      const newRegistration: DeviceRegistrationResponse = {
+        device_id: 'new-id',
+        device_name: 'Test Device',
+        device_type: DeviceType.DESKTOP,
+        auth_token: 'new-backend-token',
+      };
+
+      (secureStorage.getCredentials as any).mockResolvedValueOnce(oldCredentials);
+      (apiClient.getDevice as any).mockResolvedValueOnce({
+        ok: false,
+        error: { statusCode: 401, message: 'Invalid or missing authentication token' },
+      });
+      (secureStorage.deleteCredentials as any).mockResolvedValueOnce(undefined);
+      (apiClient.registerDevice as any).mockResolvedValueOnce({ ok: true, data: newRegistration });
+      (secureStorage.storeCredentials as any).mockResolvedValueOnce(undefined);
+
+      await service.initialize();
+
+      expect(secureStorage.deleteCredentials).toHaveBeenCalledOnce();
+      expect(apiClient.registerDevice).toHaveBeenCalledWith('Test Device', DeviceType.DESKTOP);
+      expect(service.getState().authState).toBe(AuthState.AUTHENTICATED);
+      expect(service.getState().deviceInfo?.deviceId).toBe('new-id');
+    });
+
+    it('keeps stored credentials and reports an error when verification cannot reach the backend', async () => {
+      const credentials: DeviceCredentials = {
+        deviceId: 'id-1',
+        deviceName: 'Test Device',
+        deviceType: DeviceType.DESKTOP,
+        authToken: 'synk_token',
+      };
+
+      (secureStorage.getCredentials as any).mockResolvedValueOnce(credentials);
+      (apiClient.getDevice as any).mockResolvedValueOnce({
+        ok: false,
+        error: { statusCode: null, isNetworkError: true, message: 'Network unavailable' },
+      });
+
+      await service.initialize();
+
+      expect(secureStorage.deleteCredentials).not.toHaveBeenCalled();
+      expect(apiClient.registerDevice).not.toHaveBeenCalled();
+      expect(service.getState().authState).toBe(AuthState.ERROR);
+      expect(service.getState().error).toContain('Network unavailable');
     });
 
     it('registers new device when no credentials exist', async () => {
