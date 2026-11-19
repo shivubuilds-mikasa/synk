@@ -23,7 +23,6 @@ lived six-digit code; authenticated WebSocket connections relay clipboard text b
 5. Copy text on one device and confirm it appears in Synk on the other.
 
 The hosted test backend is on Render’s free tier. It can take up to about 50 seconds to wake after inactivity, so the first connection may be slow. Its free PostgreSQL database expires after 30 days; this deployment is for testing, not long-term storage. See [Render’s free-tier limits](https://render.com/docs/free).
-
 The Windows installer is unsigned, so Windows may show a SmartScreen warning. The phone build now authenticates its WebSocket connection and defaults to the hosted test backend. The desktop repairs saved credentials if they belong to another backend. Existing device pairings remain in place after updating.
 
 ## What it does
