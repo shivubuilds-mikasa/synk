@@ -17,10 +17,11 @@ lived six-digit code; authenticated WebSocket connections relay clipboard text b
 ## Try Synk
 
 1. Install the [Windows desktop app](https://github.com/shivubuilds-mikasa/synk/releases/download/v1.0.6/Synk-Setup-1.0.5.exe).
-2. Install the [Android APK](https://github.com/shivubuilds-mikasa/synk/releases/download/v1.0.8/app-release.apk).
-3. Open both apps. Register the phone with a name; desktop registration happens automatically.
-4. On either device, create a pairing code. Enter that code on the other device.
-5. Copy text on one device and confirm it appears in Synk on the other.
+2. 
+3. Install the [Android APK](https://github.com/shivubuilds-mikasa/synk/releases/download/v1.0.8/app-release.apk).
+4. Open both apps. Register the phone with a name; desktop registration happens automatically.
+5. On either device, create a pairing code. Enter that code on the other device.
+6. Copy text on one device and confirm it appears in Synk on the other.
 
 The hosted test backend is on Render’s free tier. It can take up to about 50 seconds to wake after inactivity, so the first connection may be slow. Its free PostgreSQL database expires after 30 days; this deployment is for testing, not long-term storage. See [Render’s free-tier limits](https://render.com/docs/free).
 The Windows installer is unsigned, so Windows may show a SmartScreen warning. The phone build now authenticates its WebSocket connection and defaults to the hosted test backend. The desktop repairs saved credentials if they belong to another backend. Existing device pairings remain in place after updating.
