@@ -1,5 +1,4 @@
 <div align="center">
-
   <img src="docs/assets/synk-workflow.gif" alt="Animated Synk pairing and clipboard sync walkthrough" width="100%" />
   <h1>Synk</h1>
   <p><strong>Your text, wherever you need it.</strong><br />Pair your phone and desktop once, then keep text moving between them.</p>
