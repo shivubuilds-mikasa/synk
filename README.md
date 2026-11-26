@@ -12,7 +12,6 @@
 </div>
 
 Synk is a text-only clipboard sync app with Flutter mobile and Electron desktop clients, a FastAPI backend, and PostgreSQL storage. Pair devices with a short-
-
 lived six-digit code; authenticated WebSocket connections relay clipboard text between paired devices.
 
 ## Try Synk
